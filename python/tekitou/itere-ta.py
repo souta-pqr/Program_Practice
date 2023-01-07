@@ -1,0 +1,15 @@
+data = [1, 2, 3, 4, 5]
+
+it = iter(data)
+print(next(it))
+print(next(it))
+print(next(it))
+print(next(it))
+print(next(it))
+print("逆順にします")
+rv = reversed(data)
+print(next(rv))
+print(next(rv))
+print(next(rv))
+print(next(rv))
+print(next(rv))
