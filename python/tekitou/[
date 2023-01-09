@@ -1,5 +1,0 @@
-test = [74, 85, 69, 77, 81]
-
-print("テストの点は", test, "です。")
-print("昇順は", test(sorted), "です")
-print("降順は", test(sorted, reverse=True), "です。")
