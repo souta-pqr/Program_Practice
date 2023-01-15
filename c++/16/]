@@ -1,0 +1,28 @@
+#include<iostream>
+using namespace std;
+
+int main()
+{
+	cout.setf(ios::right,ios::adjustfield);
+	for(int i=0; i<=1; i++){
+		for(int j=0; j<=4; j++){		
+			cout.width(3);
+			cout.fill('-');
+			cout << (i+1)*(j+1);
+		}
+		cout << endl;
+	}
+	cout << endl;
+	cout.unsetf(ios::right);
+	cout.setf(ios::right,ios::adjustfield);
+	for(int i=0; i<=3; i++){
+		for(int j=0; j<=4; j++){
+			cout.width(2);
+			cout.fill('-');
+			cout << {(i+2)*5}*(j+1);
+		}
+		cout << endl;
+	}
+
+	return 0;
+}
