@@ -32,6 +32,5 @@ def has_book(picos):
 	else:
 		print('Not found')
 
-print(has_book(['note']))
-
-print(has_book(['note', 'book']))
+has_book(['note'])
+has_book(['note', 'book'])
