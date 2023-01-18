@@ -1,0 +1,2 @@
+items = "note",
+print(items)
