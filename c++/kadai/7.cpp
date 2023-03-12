@@ -4,7 +4,8 @@ using namespace std;
 //inline int square(int x){return x*x;}
 //inline double square(double x){return x*x;}
 
-template <class T>T square(T x)
+template <class T>
+T square(T x)
 {
 	return x*x;
 }
