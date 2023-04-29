@@ -1,0 +1,5 @@
+print("こんにちは")
+print("Hello.")
+print("Hi.")
+print("Hello World")
+
