@@ -16,11 +16,22 @@
   </header>
   <div role="main">
     <p><%=content %></p>
-      <% var id = 0; %>
-      <% for(var key in data) { %>
-      <%- include('data_item', 
-              {id:++id, key:key, val:[data[key]]}) %>
-      <% } %>
+    <table class="table">
+      <tr>
+        <th>message!</th>
+      </tr>
+      <tr>
+        <td><%=data.msg %></td>
+      </tr>
+    </table>
+    <form method="post" action="/">
+      <div class="form-group">
+        <label for="msg">MESSAGE</label>
+        <input type="text" name="msg" id="msg" 
+          class="form-control">
+      </div>
+      <input type="submit" value="transmission" 
+        class="btn btn-primary">
   </div>
 </body>
 

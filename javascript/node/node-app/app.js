@@ -41,62 +41,60 @@ function getFromClient(request, response) {
 	}
 }
 
-var data = {
-  'Taro': '09-999-999',
-  'Hanako': '080-888-888',
-  'Sachiko': '070-777-777',
-  'Ichiro': '060-666-666'
-};
+var data = { msg: 'no message...' };
 
-// indexのアクセス処理
+// index access progress
 function response_index(request, response) {
-  var msg = "This is Index page."
-  var content = ejs.render(index_page, {
-    title: "Index",
+	//POST access progress
+	if (request.method == 'POST') {
+		var body = '';
+
+	//Data reception event handing
+	request.on('data', (data) => {
+		body += data;
+	});
+
+	//Data reception end event procession
+		request.on('end', () => {
+			data = qs.parse(body);
+			write_index(request, response);
+		});
+	}
+	else {
+		write_index(request, response);
+	}
+}
+
+function write_index(request, response) {
+	var msg = "Display message.";
+	var content = ejs.render(index_page, {
+		title: "Index",	
+		content: msg,
+		data: data,
+	});
+	response.writeHead(200, { 'Content-Type': 'text/html' });
+	response.write(content);
+	response.end()
+}
+
+var data2 = {
+  'Taro': ['taro@yamada', '09-999-999', 'Tokyo'],
+  'Hanako': ['hanako@flower', '080-888-888', 'Yokohama'],
+  'Sachiko': ['sachi@happy', '070-777-777', 'Nagoya'],
+  'Ichiro': ['ichi@baseball', '060-666-666', 'USA'],
+}
+
+// otherのアクセス処理
+function response_other(request, response) {
+  var msg = "This is Other page."
+  var content = ejs.render(other_page, {
+    title: "Other",
     content: msg,
-    data: data,
-	filename: 'data_item'
+    data: data2,
+    filename: 'data_item'
   });
   response.writeHead(200, { 'Content-Type': 'text/html' });
   response.write(content);
   response.end();
 }
 
-function response_other(request, response) {
-	var msg = "This is Other page.";
-
-	// POST access progress
-	if (request.method == 'POST') {
-		var body = '';
-
-	// When Received data, event progress
-	request.on('data', (data) => {
-		body += data;
-	});
-
-	// When stopping Received data, event progress
-	request.on('end', () => {
-		var post_data = qs.parse(body);
-		msg += 'You [' + post_data.msg + '] wrote';
-		var content = ejs.render(other_page, {
-			title: "Other",
-			content: msg,
-		});
-		response.writeHead(200, { 'Content-Type': 'text/html' });
-		response.write(content);
-		response.end();
-	});
-
-	// GET aceess progress
-	}
-	else {
-		var msg = "no page...";
-		var content = ejs.render(other_page, {
-			title: "Other",
-			content: msg,
-		});
-		response.writeHead(200, { 'Content-Type': 'text/html' });
-		response.write(content);
-		response.end();
-	}
-}
