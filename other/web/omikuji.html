@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>おみくじゲーム</title>
+    <style>
+        h1 {color : red; font-size: 200px;}
+        h6 {color : green; font-size: 30px;}
+        h3 {color : blue; font-size: 100px;}
+    </style>
+</head>
+<body>
+    <script>
+        function omikuji() {
+            const fortune = Math.floor(Math.random() * 3)
+            if(2 == fortune) {
+                document.write("<h1>大吉です</h1>")
+            }
+            else if(1 == fortune) {
+                document.write("<h6>小吉です</h6>")
+            }
+            else {
+                document.write("<h3>吉です</h3>")
+            }
+        }
+        omikuji()
+    </script>
+</body>
+</html>
