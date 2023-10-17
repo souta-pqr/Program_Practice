@@ -33,8 +33,6 @@ for i, row in df.iterrows():
 
     text = row['タグ付き書字形']
     pronunciation = row['発音'] if pd.notnull(row['発音']) else ''  # 発音列から値を取得し、値が存在しない場合は空白を設定
-    pronunciation = re.sub(r'[^\w\s]', '', pronunciation)  # 句読点や疑問符を削除
-    pronunciation = re.sub(r'[a-zA-Z]', '', pronunciation)  # アルファベットを削除
     output_text += f"{text} & {pronunciation}\n"  # 発音を出力テキストに追加
 
 # テキストをファイルに書き込む
