@@ -9,7 +9,7 @@ output_text = ""
 
 # 会話ID、発話単位の開始時刻、終了時刻、話者ラベルの部分を取得
 conversation_info = df.iloc[0]
-conversation_id = conversation_info['会話ID']
+conversation_id = format(conversation_info['長単位連番'], '04d')  # 長単位連番を4桁で表示するように変更
 start_time = conversation_info['発話単位の開始時刻']
 end_time = conversation_info['発話単位の終了時刻']
 speaker_label = conversation_info['話者ラベル']
@@ -19,10 +19,9 @@ output_text += f"{conversation_id} {start_time:.3f}-{end_time:.3f} {speaker_labe
 
 # 発話内容を整形して出力テキストに追加
 for i, row in df.iterrows():
-    if i > 0 and (row['会話ID'] != conversation_id or row['発話単位の開始時刻'] != start_time):
-        
+    if i > 0 and (row['長単位連番'] != conversation_id or row['発話単位の開始時刻'] != start_time):
         # 新しい会話ID、発話単位の開始時刻、終了時刻、話者ラベルを取得し，出力テキストに追加
-        conversation_id = row['会話ID']
+        conversation_id = format(row['長単位連番'], '04d')  # 長単位連番を4桁で表示するように変更
         start_time = row['発話単位の開始時刻']
         end_time = row['発話単位の終了時刻']
         speaker_label = row['話者ラベル']
