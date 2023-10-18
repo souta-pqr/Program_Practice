@@ -9,10 +9,14 @@ output_text = ""
 
 # 会話ID、発話単位の開始時刻、終了時刻、話者ラベルの部分を取得
 conversation_info = df.iloc[0]
+kaiwa_id = conversation_info['会話ID']
 conversation_id = format(conversation_info['長単位連番'], '04d')  # 長単位連番を4桁で表示するように変更
 start_time = conversation_info['発話単位の開始時刻']
 end_time = conversation_info['発話単位の終了時刻']
 speaker_label = conversation_info['話者ラベル']
+
+# 会話IDを出力テキストの一番上に追加
+output_text += f"%会話ID:{kaiwa_id}\n"
 
 # 会話ID、開始時刻、終了時刻、話者ラベルを出力テキストに追加
 output_text += f"{conversation_id} {start_time:.3f}-{end_time:.3f} {speaker_label}:\n"
@@ -29,8 +33,19 @@ for i, row in df.iterrows():
 
     text = row['タグ付き書字形']
     pronunciation = row['発音'] if pd.notnull(row['発音']) else ''  # 発音列から値を取得し、値が存在しない場合は空白を設定
-    pronunciation = re.sub(r'[^\w\s]', '', pronunciation)  # 句読点や疑問符を削除
-    pronunciation = re.sub(r'[a-zA-Z]', '', pronunciation)  # アルファベットを削除
+
+    # タグ付き書字形が丸括弧'('で始まり次にアルファベット(A~Z)があり、半角空白があった後に何か文字がある場合、発音の先頭に'('と同じものと半角空白を追加する
+    matches_start = re.finditer(r'\([A-Z]', text)
+    for match_start in matches_start:
+        index_start = match_start.start()
+        pronunciation = pronunciation[:index_start] + '(' + text[index_start+1] + ' ' + pronunciation[index_start:]
+
+    # タグ付き書字形が')'で終わる場合または')'の後に'。'で終わる場合、発音の最後に')'を追加する
+    matches_end = re.finditer(r'\)', text)
+    for match_end in matches_end:
+        index_end = match_end.start()
+        pronunciation = pronunciation[:index_end] + ')' + pronunciation[index_end:]
+
     output_text += f"{text} & {pronunciation}\n"  # 発音を出力テキストに追加
 
 # テキストをファイルに書き込む

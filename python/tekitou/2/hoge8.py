@@ -33,6 +33,19 @@ for i, row in df.iterrows():
 
     text = row['タグ付き書字形']
     pronunciation = row['発音'] if pd.notnull(row['発音']) else ''  # 発音列から値を取得し、値が存在しない場合は空白を設定
+
+    # タグ付き書字形が丸括弧'('で始まり次にアルファベット(A~Z)があり、半角空白があった後に何か文字がある場合、発音の先頭に'('と同じものと半角空白を追加する
+    match_start = re.search(r'\([A-Z].*', text)
+    if match_start:
+        index_start = match_start.start()
+        pronunciation = pronunciation[:index_start] + '(' + text[index_start+1] + ' ' + pronunciation[index_start:]
+
+    # タグ付き書字形が')'で終わる場合または')'の後に'。'で終わる場合、発音の最後に')'を追加する
+    match_end = re.search(r'\).*', text)
+    if match_end:
+        index_end = match_end.start()
+        pronunciation = pronunciation[:index_end] + ')' + pronunciation[index_end:]
+
     output_text += f"{text} & {pronunciation}\n"  # 発音を出力テキストに追加
 
 # テキストをファイルに書き込む
