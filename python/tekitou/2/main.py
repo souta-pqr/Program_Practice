@@ -1,16 +1,28 @@
+from pykakasi import kakasi
 import pandas as pd
 import re
-from pykakasi import kakasi
 
-# カタカナへの変換関数
 def convert_to_katakana(text):
-    kakasi_instance = kakasi()
-    conv = kakasi_instance.getConverter()
-
+    k = kakasi()
+    k.setMode('H', 'K')  # ひらがなをカタカナに
+    k.setMode('K', 'K')  # カタカナをカタカナに（変換なし）
+    k.setMode('J', 'K')  # 漢字をカタカナに
+    conv = k.getConverter()
     return conv.do(text)
 
 # CSVファイルを読み込み
 df = pd.read_csv('C001_001-morphLUW.csv', encoding='shift-jis')  # ファイルパスを適切なものに置き換えてください
+
+# 「タグ付き書字形」の列の値をカタカナに変換し、新しい変数に格納
+katakana_values = df['タグ付き書字形'].apply(convert_to_katakana)
+
+# 「発音」の列の値を取得
+pronunciation_values = df['発音']
+
+# カタカナ変換後の値と「発音」の列の値が同じ場合は、「発音」の列の値を使用
+for i in range(len(katakana_values)):
+    if katakana_values[i] == pronunciation_values[i]:
+        katakana_values[i] = pronunciation_values[i]
 
 # 出力用のテキストを初期化
 output_text = ""
@@ -39,7 +51,7 @@ for i, row in df.iterrows():
         speaker_label = row['話者ラベル']
         output_text += f"{conversation_id} {start_time:.3f}-{end_time:.3f} {speaker_label}:\n"
 
-    text = row['タグ付き書字形']
+    text = katakana_values[i]
     pronunciation = row['発音'] if pd.notnull(row['発音']) else ''  # 発音列から値を取得し、値が存在しない場合は空白を設定
 
     # タグ付き書字形が丸括弧'('で始まり次にアルファベット(A~Z)があり、半角空白があった後に何か文字がある場合、発音の先頭に'('と同じものと半角空白を追加する
@@ -52,11 +64,7 @@ for i, row in df.iterrows():
     matches_end = re.finditer(r'\)', text)
     for match_end in matches_end:
         index_end = match_end.start()
-        # タグ付き書字形の文字列をカタカナに変換
-        katakana_text = convert_to_katakana(text[index_end-1])
-        # カタカナが発音と一致する場合にのみ、発音の最後に')'を追加
-        if len(pronunciation) > index_end-1 and pronunciation[index_end-1] == katakana_text:
-            pronunciation = pronunciation[:index_end] + ')' + pronunciation[index_end:]
+        pronunciation = pronunciation[:index_end] + ')' + pronunciation[index_end:]
 
     output_text += f"{text} & {pronunciation}\n"  # 発音を出力テキストに追加
 
