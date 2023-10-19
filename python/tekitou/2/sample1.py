@@ -51,9 +51,9 @@ for i, row in df.iterrows():
         katakana_text_only = re.sub(r'[^ァ-ヴーｱ-ﾝﾞﾟ]', '', katakana_text)
         if katakana_text_only == pronunciation:
             pronunciation = katakana_text
-        # この行以降の処理をスキップ
-        output_text += f"{text} & {pronunciation}\n"  # 発音を出力テキストに追加
-        continue
+            # この行以降の処理をスキップ
+            output_text += f"{text} & {pronunciation}\n"  # 発音を出力テキストに追加
+            continue
 
     # タグ付き書字形が丸括弧'('で始まり次にアルファベット(A~Z)があり、半角空白があった後に何か文字がある場合、発音の先頭に'('と同じものと半角空白を追加する
     matches_start = re.finditer(r'\([A-Z]', text)

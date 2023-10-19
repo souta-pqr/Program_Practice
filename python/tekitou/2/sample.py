@@ -24,6 +24,7 @@ start_time = conversation_info['発話単位の開始時刻']
 end_time = conversation_info['発話単位の終了時刻']
 speaker_label = conversation_info['話者ラベル']
 
+
 # 会話IDを出力テキストの一番上に追加
 output_text += f"%会話ID:{kaiwa_id}\n"
 
@@ -32,7 +33,7 @@ output_text += f"{conversation_id} {start_time:.3f}-{end_time:.3f} {speaker_labe
 
 # 発話内容を整形して出力テキストに追加
 for i, row in df.iterrows():
-    if i > 0 and (row['長単位連番'] != conversation_id or row['発話単位の開始時刻'] != start_time):
+    if i > 0:
         # 新しい会話ID、発話単位の開始時刻、終了時刻、話者ラベルを取得し，出力テキストに追加
         conversation_id = format(row['長単位連番'], '04d')  # 長単位連番を4桁で表示するように変更
         start_time = row['発話単位の開始時刻']
@@ -51,9 +52,9 @@ for i, row in df.iterrows():
         katakana_text_only = re.sub(r'[^ァ-ヴーｱ-ﾝﾞﾟ]', '', katakana_text)
         if katakana_text_only == pronunciation:
             pronunciation = katakana_text
-        # この行以降の処理をスキップ
-        output_text += f"{text} & {pronunciation}\n"  # 発音を出力テキストに追加
-        continue
+            # この行以降の処理をスキップ
+            output_text += f"{text} & {pronunciation}\n"  # 発音を出力テキストに追加
+            continue
 
     # タグ付き書字形が丸括弧'('で始まり次にアルファベット(A~Z)があり、半角空白があった後に何か文字がある場合、発音の先頭に'('と同じものと半角空白を追加する
     matches_start = re.finditer(r'\([A-Z]', text)
@@ -67,8 +68,4 @@ for i, row in df.iterrows():
         index_end = match_end.start()
         pronunciation = pronunciation[:index_end] + ')' + pronunciation[index_end:]
 
-    output_text += f"{text} & {pronunciation}\n"  # 発音を出力テキストに追加
-
-# テキストをファイルに書き込む
-with open('output.txt', 'w', encoding='utf-8') as file:
-    file.write(output_text)
+    output_text += f"{text} & {pronunciation}\n"  # 発音を
