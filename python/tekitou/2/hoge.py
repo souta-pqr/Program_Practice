@@ -13,9 +13,6 @@ def convert_to_katakana(text):
 # CSVファイルを読み込み
 df = pd.read_csv('C001_001-morphLUW.csv', encoding='shift-jis')  # ファイルパスを適切なものに置き換えてください
 
-# 出力用のテキストを初期化
-output_text = ""
-
 # 会話ID、発話単位の開始時刻、終了時刻、話者ラベルの部分を取得
 conversation_info = df.iloc[0]
 kaiwa_id = conversation_info['会話ID']
@@ -24,6 +21,8 @@ start_time = conversation_info['発話単位の開始時刻']
 end_time = conversation_info['発話単位の終了時刻']
 speaker_label = conversation_info['話者ラベル']
 
+# 出力用のテキストを初期化
+output_text = ""
 
 # 会話IDを出力テキストの一番上に追加
 output_text += f"%会話ID:{kaiwa_id}\n"
@@ -33,12 +32,20 @@ output_text += f"{conversation_id} {start_time:.3f}-{end_time:.3f} {speaker_labe
 
 # 発話内容を整形して出力テキストに追加
 for i, row in df.iterrows():
-    if i > 0:
+    if i > 0 and (row['長単位連番'] != conversation_id or row['発話単位の開始時刻'] != start_time or row['文節頭フラグ'] == 'B'):
         # 新しい会話ID、発話単位の開始時刻、終了時刻、話者ラベルを取得し，出力テキストに追加
         conversation_id = format(row['長単位連番'], '04d')  # 長単位連番を4桁で表示するように変更
         start_time = row['発話単位の開始時刻']
         end_time = row['発話単位の終了時刻']
-        speaker_label = row['話者ラベル']
+        new_speaker_label = row['話者ラベル']
+        if new_speaker_label != speaker_label:
+            # テキストをファイルに書き込む
+            with open(f'{speaker_label}_output.txt', 'w', encoding='utf-8') as file:
+                file.write(output_text)
+            # 新しいスピーカーラベルで出力テキストを初期化
+            output_text = ""
+            speaker_label = new_speaker_label
+
         output_text += f"{conversation_id} {start_time:.3f}-{end_time:.3f} {speaker_label}:\n"
 
     text = row['タグ付き書字形']
@@ -68,4 +75,8 @@ for i, row in df.iterrows():
         index_end = match_end.start()
         pronunciation = pronunciation[:index_end] + ')' + pronunciation[index_end:]
 
-    output_text += f"{text} & {pronunciation}\n"  # 発音を
+    output_text += f"{text} & {pronunciation}\n"  # 発音を出力テキストに追加
+
+# 最後のスピーカーラベルのテキストをファイルに書き込む
+with open(f'{speaker_label}_output.txt', 'w', encoding='utf-8') as file:
+    file.write(output_text)
