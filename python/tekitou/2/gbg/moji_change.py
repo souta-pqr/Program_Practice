@@ -9,8 +9,8 @@ def convert_to_katakana(text):
 
     return conv.do(text)
 
-text1 = "沢村さん"
-text2 = "サワムラサン"
+text1 = "年中"
+text2 = "ネンジ"
 
 # Convert to katakana
 text1_katakana = convert_to_katakana(text1)

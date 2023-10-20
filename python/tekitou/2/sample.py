@@ -21,7 +21,6 @@ prev_bunsetsu_flag = 'B'
 current_text = ""
 current_pronunciation = ""
 prev_start_time = None
-counter = 1  # 順番に表示するためのカウンターを追加し、初期値を1に設定
 for i, row in df.iterrows():
     bunsetsu_flag = row['文節頭フラグ']
     start_time = row['発話単位の開始時刻']
@@ -30,8 +29,7 @@ for i, row in df.iterrows():
             output_text += f"{current_text} & {current_pronunciation}\n"  # 発音を出力テキストに追加
         if start_time != prev_start_time:
             # 新しい会話ID、発話単位の開始時刻、終了時刻、話者ラベルを取得し，出力テキストに追加
-            conversation_id = format(counter, '04d')  # 長単位連番を利用せず、順番に'04d'の形式で表示するように変更
-            counter += 1  # カウンターをインクリメント
+            conversation_id = format(row['長単位連番'], '04d')  # 長単位連番を4桁で表示するように変更
             start_time = row['発話単位の開始時刻']
             end_time = row['発話単位の終了時刻']
             speaker_label = row['話者ラベル']
