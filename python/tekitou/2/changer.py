@@ -206,7 +206,8 @@ def make_utterance_id_from_utterance_info(lecture_id, utterance_info):
     """
     start = utterance_info['start']
     end = utterance_info['end']
-    lecture_id_with_ch = lecture_id + utterance_info['channel']
+    #lecture_idのtypeがNoneだったため，str型に変更
+    lecture_id_with_ch = str(lecture_id) + utterance_info['channel']
     utt_id = f"{lecture_id_with_ch}_" + \
                 f"{int(start):04d}{int(start*1000)%1000:03d}_" + \
                 f"{int(end):04d}{int(end*1000)%1000:03d}"
@@ -617,7 +618,7 @@ def connect_utterances(parsed_trn,
     return output
 
 
-def parse_trn_file(filename, encoding='shift_jis'):
+def parse_trn_file(filename, encoding='UTF-8'):
     """TRNファイルを解析して辞書型のデータに変換する
     
     Args:
@@ -627,7 +628,7 @@ def parse_trn_file(filename, encoding='shift_jis'):
     Returns:
         dict: TRNファイルの内容を辞書型に変換したもの
     """
-    with open(filename, 'r', encoding=encoding) as file:
+    with open(filename, 'r', encoding='UTF-8') as file:
         lines = file.readlines()
 
     lecture_id = None
@@ -669,6 +670,8 @@ def parse_trn_file(filename, encoding='shift_jis'):
         'lecture_id': lecture_id,
         'utterances': utterances
     }
+
+    print(output)
 
     return output
 
@@ -748,7 +751,7 @@ def main(trn_file_path, output_dir, mode,
 if __name__ == "__main__":
     CEJC_PATH = "."
     TRN_PATH = os.path.join(CEJC_PATH, ".")
-    OUT_FILE = os.path.join(TRN_PATH, ".", "output.txt")
+    OUT_FILE = os.path.join(TRN_PATH, "output.txt")
     # TRN_FILE = os.path.join(TRN_PATH, "noncore", "A01F0019.trn")
     # TRN_FILE = os.path.join(TRN_PATH, "core", "D01F0002.trn")
 
@@ -758,7 +761,8 @@ if __name__ == "__main__":
     tag_count = {}
 
     # generator = tqdm(sorted(glob.glob(os.path.join(TRN_PATH, "**", "*.trn"), recursive=True)))
-    generator = sorted(glob.glob(os.path.join(TRN_PATH, "**", "*.txt"), recursive=True))
+    generator = sorted(glob.glob(os.path.join(TRN_PATH, "*.txt"), recursive=True))
+    print(generator)
     for trn_file in generator:
         parsed = parse_trn_file(trn_file)
         connected = connect_utterances(parsed)
