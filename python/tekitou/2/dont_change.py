@@ -1,4 +1,3 @@
-#! /usr/bin/env python3
 import os
 import re
 from typing import List, Tuple, Dict
@@ -13,7 +12,7 @@ _kanas = """ア イ ウ エ オ カ キ ク ケ コ ガ ギ グ ゲ ゴ サ シ 
 ジャ ジュ ジョ チャ チュ チョ ディ ドゥ デュ ニャ ニュ ニョ ヒャ ヒュ ヒョ
 ビャ ビュ ビョ ピャ ピュ ピョ ミャ ミュ ミョ リャ リュ リョ イェ クヮ
 グヮ シェ ジェ ティ トゥ チェ ツァ ツィ ツェ ツォ ヒェ ファ フィ フェ フォ フュ
-テュ ブィ ニェ ミェ スィ ズィ ヴァ ヴィ ヴ ヴェ ヴォ ー ッ ャ ュ ョ | <sp>"""
+テュ ブィ ニェ ミェ スィ ズィ ヴァ ヴィ ヴ ヴェ ヴォ ー ッ | <sp>"""
 _kana_list = [x.replace(' ', '') for x in _kanas.replace('\n', ' ').split(' ')]
 _kana_list = sorted(_kana_list, key=len, reverse=True)
 
@@ -146,23 +145,28 @@ def tokenize_kana_string_and_extract_label_seq(string: str, tag2label: Dict[str,
             tagged_string, string = extract_head_tagged_string(string)
             match_ = re.match(r'^\(([^ ]+) (.+)\)$', tagged_string)
             if not match_:
-                if re.match(r'\([A-Z] \)', tagged_string):
-                    # ここに変な行があった時の対処を書く
+                if tagged_string == '(?)':
+                    continue
+                elif tagged_string == '(L )':
+                    # 1例 (L <FV>) というものがあることを確認
                     continue
                 else:
-                    # ここに変な行があった時の対処を書く
                     raise Exception('Invalid tagged string: {}'.format(tagged_string))
 
             tag = match_.group(1)
             content = match_.group(2)
             # タグごとにコンテンツの絞り込みをする
-            if tag in ('D', 'T', 'L', 'C', 'S', 'U', 'X', 'K', 'M', 'O', 'B', 'Y', 'G', 'F', 'I', 'R'):
+            if tag in ('F', 'D', 'D2', 'M', 'O', 'X', '笑', '泣', '咳', 'L'):
                 # これらのタグの場合はそのまま
                 pass
             else:
                 # とりあえずセミコロンとカンマで分割
                 contents = split_tagged_content_with_semicolon_or_comma(content)
-                if tag in ('W'):
+                if tag == '?':
+                    # ? の場合は最初の要素だけ
+                    content = contents[0]
+                elif tag in ('W', 'B'):
+                    # W, B の場合は最初の要素だけ
                     content = contents[0]
                 else:
                     raise Exception('Unknown tag: {}'.format(tag))
@@ -210,8 +214,10 @@ def make_utterance_id_from_utterance_info(lecture_id, utterance_info):
     """
     start = utterance_info['start']
     end = utterance_info['end']
-    #lecture_idのtypeがNoneだったため，str型に変更
-    lecture_id_with_ch = str(lecture_id) + utterance_info['channel']
+    if lecture_id[0] == 'D':
+        lecture_id_with_ch = lecture_id + utterance_info['channel']
+    else:
+        lecture_id_with_ch = lecture_id
     utt_id = f"{lecture_id_with_ch}_" + \
                 f"{int(start):04d}{int(start*1000)%1000:03d}_" + \
                 f"{int(end):04d}{int(end*1000)%1000:03d}"
@@ -239,40 +245,30 @@ def make_text_tokenized_kana(flattened_trn,
     segments = []
 
     lecture_id = flattened_trn['lecture_id']
-    # wav_id = {'L': lecture_id}
-    # if lecture_id[0] == 'D':
-    #     wav_id['L'] = lecture_id + 'L'
-    #     wav_id['R'] = lecture_id + 'R'
     for utterance in flattened_trn['flattened_utterances']:
         utt_id = make_utterance_id_from_utterance_info(lecture_id, utterance)
         text = utterance['kana_text']
 
-        # # ボーカルフライ
-        # text = text.replace('<FV>', '')
-        # # うん/うーん/ふーん の音が特定困難な場合
-        # # 本来は基本形の文字列をカタカナ化したものを持ってきたい．
-        # text = text.replace('<VN>', 'ウン')        
-        # # 非語彙的な母音の引き延ばし
-        # text = text.replace('<H>', 'ー')
-        # # 非語彙的な子音の引き延ばし
-        # text = text.replace('<Q>', '')
-        # # 笑，咳，息
-        # text = text.replace('<笑>', '')
-        # text = text.replace('<咳>', '')
-        # text = text.replace('<息>', '')
-        
-        # 不要な文字の削除z
-        text = text.replace('◇', '')
-        text = text.replace('＃', '')
-        text = text.replace('。', '')
-        text = text.replace('?', '')
+        # ボーカルフライ
+        text = text.replace('<FV>', '')
+        # うん/うーん/ふーん の音が特定困難な場合
+        # 本来は基本形の文字列をカタカナ化したものを持ってきたい．
+        text = text.replace('<VN>', 'ウン')        
+        # 非語彙的な母音の引き延ばし
+        text = text.replace('<H>', 'ー')
+        # 非語彙的な子音の引き延ばし
+        text = text.replace('<Q>', '')
+        # 笑，咳，息
+        text = text.replace('<笑>', '')
+        text = text.replace('<咳>', '')
+        text = text.replace('<息>', '')
 
         if remove_privacy_utt:
             if 'R' in text:
                 continue
-        # if remove_extra_content:
-        #     # '<' '>' で囲まれた文字列（<sp>以外）を削除
-        #     text = re.sub(r'(<\/?(?!sp\b)[^>]+>)', '', text)
+        if remove_extra_content:
+            # '<' '>' で囲まれた文字列（<sp>以外）を削除
+            text = re.sub(r'(?<!<sp>)<[^>]+>', '', text)
         if remove_word_sep:
             text = text.replace('|', '')
         if remove_sp:
@@ -280,12 +276,11 @@ def make_text_tokenized_kana(flattened_trn,
         if len(text) == 0:
             continue
 
-        # print(utt_id, text)
         kana_list, label_list = tokenize_kana_string_and_extract_label_seq(text)
 
         texts.append(f"{utt_id} {' '.join(kana_list)}")
         labels.append(f"{utt_id} {' '.join(label_list)}")
-        segments.append(f"{utt_id} {utterance['channel']} {utterance['start']:.3f} {utterance['end']:.3f}")
+        segments.append(f"{utt_id} {utterance['start']:.3f} {utterance['end']:.3f}")
 
     return texts, labels, segments
 
@@ -315,26 +310,26 @@ def remove_tag_from_kana_tagged_string(s: str):
             tagged_string, s = extract_head_tagged_string(s)
             match_ = re.match(r'^\(([^ ]+) (.+)\)$', tagged_string)
             if not match_:
-                # if tagged_string == '(?)':
-                #     continue
-                # elif tagged_string == '(L )':
-                #     # 1例 (L <FV>) というものがあることを確認
-                #     continue
-                # else:
+                if tagged_string == '(?)':
+                    continue
+                elif tagged_string == '(L )':
+                    # 1例 (L <FV>) というものがあることを確認
+                    continue
+                else:
                     raise Exception('Invalid tagged string: {}'.format(tagged_string))
             tag = match_.group(1)
             content = match_.group(2)
             # タグごとにコンテンツの絞り込みをする
-            if tag in ('D', 'T', 'L', 'C', 'S', 'U', 'X', 'K', 'M', 'O', 'B', 'Y', 'G', 'F', 'I', 'R'):
+            if tag in ('F', 'D', 'D2', 'M', 'O', 'X', '笑', '泣', '咳', 'L'):
                 # これらのタグの場合はそのまま
                 pass
             else:
-                # # とりあえずセミコロンとカンマで分割
-                # contents = split_tagged_content_with_semicolon_or_comma(content)
-                # if tag == '?':
-                #     # ? の場合は最初の要素だけ
-                #     content = contents[0]
-                if tag in ('W'):
+                # とりあえずセミコロンとカンマで分割
+                contents = split_tagged_content_with_semicolon_or_comma(content)
+                if tag == '?':
+                    # ? の場合は最初の要素だけ
+                    content = contents[0]
+                elif tag in ('W', 'B'):
                     # W, B の場合は最初の要素だけ
                     content = contents[0]
                 else:
@@ -358,34 +353,30 @@ def make_text_kana(flattened_trn,
     segments = []
 
     lecture_id = flattened_trn['lecture_id']
-    # wav_id = {'L': lecture_id}
-    # if lecture_id[0] == 'D':
-    #     wav_id['L'] = lecture_id + 'L'
-    #     wav_id['R'] = lecture_id + 'R'
     for utterance in flattened_trn['flattened_utterances']:
         utt_id = make_utterance_id_from_utterance_info(lecture_id, utterance)
         text = utterance['kana_text']
 
-        # # ボーカルフライ
-        # text = text.replace('<FV>', '')
-        # # うん/うーん/ふーん の音が特定困難な場合
-        # # 本来は基本形の文字列をカタカナ化したものを持ってきたい．
-        # text = text.replace('<VN>', 'ウン')        
-        # # 非語彙的な母音の引き延ばし
-        # text = text.replace('<H>', 'ー')
-        # # 非語彙的な子音の引き延ばし
-        # text = text.replace('<Q>', '')
-        # # 笑，咳，息
-        # text = text.replace('<笑>', '')
-        # text = text.replace('<咳>', '')
-        # text = text.replace('<息>', '')
+        # ボーカルフライ
+        text = text.replace('<FV>', '')
+        # うん/うーん/ふーん の音が特定困難な場合
+        # 本来は基本形の文字列をカタカナ化したものを持ってきたい．
+        text = text.replace('<VN>', 'ウン')        
+        # 非語彙的な母音の引き延ばし
+        text = text.replace('<H>', 'ー')
+        # 非語彙的な子音の引き延ばし
+        text = text.replace('<Q>', '')
+        # 笑，咳，息
+        text = text.replace('<笑>', '')
+        text = text.replace('<咳>', '')
+        text = text.replace('<息>', '')
 
         if remove_privacy_utt:
             if 'R' in text:
                 continue
-        # if remove_extra_content:
-        #     # '<' '>' で囲まれた文字列を削除
-        #     text = re.sub(r'(<\/?(?!sp\b)[^>]+>)', '', text)
+        if remove_extra_content:
+            # '<' '>' で囲まれた文字列を削除
+            text = re.sub(r'(?<!<sp>)<[^>]+>', '', text)
         if remove_word_sep:
             text = text.replace('|', '')
         if remove_sp:
@@ -396,7 +387,7 @@ def make_text_kana(flattened_trn,
             continue
 
         texts.append(f"{utt_id} {text}")
-        segments.append(f"{utt_id} {wav_id[utterance['channel']]} {utterance['start']:.3f} {utterance['end']:.3f}")
+        segments.append(f"{utt_id} {utterance['start']:.3f} {utterance['end']:.3f}")
 
     return texts, segments
 
@@ -426,26 +417,26 @@ def remove_tag_from_plain_tagged_string(s: str):
             tagged_string, s = extract_head_tagged_string(s)
             match_ = re.match(r'^\(([^ ]+) (.+)\)$', tagged_string)
             if not match_:
-                # if tagged_string == '(?)':
-                #     continue
-                # else:
+                if tagged_string == '(?)':
+                    continue
+                else:
                     raise Exception('Invalid tagged string: {}'.format(tagged_string))
             tag = match_.group(1)
             content = match_.group(2)
             # タグごとにコンテンツの絞り込みをする
-            if tag in ('D', 'T', 'L', 'C', 'S', 'U', 'X', 'M', 'O', 'B', 'Y', 'G', 'F', 'I', 'R'):
+            if tag in ('F', 'D', 'D2', 'M', 'O', 'X'):
                 pass
             else:
                 # とりあえずセミコロンとカンマで分割
                 contents = split_tagged_content_with_semicolon_or_comma(content)
-                if tag in ('K'):
+                if tag in ('?', 'K'):
                     # ? の場合は最初の要素だけ
                     content = contents[0]
-                # elif tag == 'A':
-                #     if re.match(r'^[０-９．]+$', contents[1]):
-                #         content = contents[0]
-                #     else:
-                #         content = contents[1]
+                elif tag == 'A':
+                    if re.match(r'^[０-９．]+$', contents[1]):
+                        content = contents[0]
+                    else:
+                        content = contents[1]
                 else:
                     raise Exception('Unknown tag: {}'.format(tag))                    
             # content がタグを含む場合は再帰処理をする
@@ -465,10 +456,6 @@ def make_text_plain(flattened_trn,
     segments = []
 
     lecture_id = flattened_trn['lecture_id']
-    # wav_id = {'L': lecture_id}
-    # if lecture_id[0] == 'D':
-    #     wav_id['L'] = lecture_id + 'L'
-    #     wav_id['R'] = lecture_id + 'R'
     for utterance in flattened_trn['flattened_utterances']:
         utt_id = make_utterance_id_from_utterance_info(lecture_id, utterance)
         
@@ -477,9 +464,9 @@ def make_text_plain(flattened_trn,
         if remove_privacy_utt:
             if 'R' in text:
                 continue
-        # if remove_extra_content:
-        #     # <sp>以外の<>で囲まれた文字列を削除
-        #     text = re.sub(r'(<\/?(?!sp\b)[^>]+>)', '', text)
+        if remove_extra_content:
+            # '<' '>' で囲まれた文字列を削除
+            text = re.sub(r'<[^>]*>', '', text)
         if remove_word_sep:
             text = text.replace('|', '')
         if remove_sp:
@@ -490,7 +477,7 @@ def make_text_plain(flattened_trn,
             continue
 
         texts.append(f"{utt_id} {text}")
-        segments.append(f"{utt_id} {wav_id[utterance['channel']]} {utterance['start']:.3f} {utterance['end']:.3f}")
+        segments.append(f"{utt_id} {utterance['start']:.3f} {utterance['end']:.3f}")
 
     return texts, segments
 
@@ -541,7 +528,6 @@ def flat_utterances(parsed_or_connected_trn,
             if 'extra_content' in u:
                 plain_text += u['extra_content']
                 kana_text += u['extra_content']
-                # print(kana_text)
             else:
                 plain_text += word_sep.join([word[0] for word in u['words']])
                 kana_text += word_sep.join([word[1] for word in u['words']])
@@ -556,16 +542,11 @@ def flat_utterances(parsed_or_connected_trn,
 
     output['flattened_utterances'] = flattened_utterances
 
-    #output を 'flat.txt' ファイルに書き込む
-    with open('gbg/flat.txt', 'w') as f:
-        f.write(str(output))
-
     return output
 
 
 def connect_utterances(parsed_trn, 
                        gap: float=0.5, max: float=10.0,
-                       remove_extra_content: bool=True,
                        isolate_extra_content: bool=True):
     """TRNファイルの解析結果の中の発話（utterance）を, 
     発話間のポーズや発話の長さに基づいて接続する.
@@ -575,10 +556,7 @@ def connect_utterances(parsed_trn,
         gap (float, optional): 発話間のポーズの最大長さ. この長さを超えるポーズでは発話を分割する.
                                 Defaults to 0.5.
         max (float, optional): 発話の最大長さ. 接続後の発話長がこの長さを超えないようにする. Defaults to 10.0.
-        remove_extra_content (bool, optional): Trueの場合, extra_contentを除去する. Defaults to True.
         isolate_extra_content (bool, optional): Trueの場合, extra_contentは単独発話として扱う. Defaults to True.
-                                                remove_extra_content=True の場合は無視される.
-
     
     Returns:
         dict: 接続された発話を含む辞書型のデータ
@@ -594,8 +572,6 @@ def connect_utterances(parsed_trn,
     # 接続された発話の中に含まれる開いた括弧の数
     num_open_parentheses = 0
     for utterance in parsed_trn['utterances']:
-        if remove_extra_content and 'extra_content' in utterance:
-            continue
         local_num_open_parentheses = sum([w[0].count('(') - w[0].count(')') for w in utterance['words']])
         # print(num_open_parentheses, local_num_open_parentheses, ''.join([w[0] for w in utterance['words']]), utterance.get('extra_content', ''))
         if len(connected_utterance) == 0:
@@ -629,12 +605,10 @@ def connect_utterances(parsed_trn,
     
     output['connected_utterances'] = connected_utterances
 
-    # print(output)
-
     return output
 
 
-def parse_trn_file(filename, encoding='UTF-8'):
+def parse_trn_file(filename, encoding='shift_jis'):
     """TRNファイルを解析して辞書型のデータに変換する
     
     Args:
@@ -644,7 +618,7 @@ def parse_trn_file(filename, encoding='UTF-8'):
     Returns:
         dict: TRNファイルの内容を辞書型に変換したもの
     """
-    with open(filename, 'r', encoding='UTF-8') as file:
+    with open(filename, 'r', encoding=encoding) as file:
         lines = file.readlines()
 
     lecture_id = None
@@ -654,7 +628,7 @@ def parse_trn_file(filename, encoding='UTF-8'):
     for line in lines:
         line = line.strip()
 
-        if line.startswith('%会話ID:'):
+        if line.startswith('%講演ID:'):
             lecture_id = line.split(':')[1]
         elif len(line) > 0 and line[0].isdigit():
             if current_utterance:
@@ -689,51 +663,6 @@ def parse_trn_file(filename, encoding='UTF-8'):
 
     return output
 
-def make_wav_scp(wav_file_path):
-    basename = os.path.basename(wav_file_path)
-    lecture_id = basename[:basename.find('.')]
-    if lecture_id[0] != 'D':
-        return ['{} {}'.format(lecture_id, wav_file_path)]
-    else:
-        return ['{} sox {} -t wav - remix 1|'.format(lecture_id+'L', wav_file_path),
-                '{} sox {} -t wav - remix 2|'.format(lecture_id+'R', wav_file_path)]
-    
-def make_utt2spk(texts):
-    result = []
-    for text in texts:
-        # print(text)
-        utt_id, _ = text.split(' ', 1)
-        spk_id = utt_id[:utt_id.find('_')]
-        result.append('{} {}'.format(utt_id, spk_id))
-    return result
-
-def sort_texts(texts):
-    texts_dict = {k: v for k, v in [text.split(' ', 1) for text in texts]}
-    sorted_keys = sorted(texts_dict.keys())
-    return [k + ' ' + texts_dict[k] for k in sorted_keys]
-
-def sort_as_texts(data, texts):
-    data_dict = {k: v for k, v in [d.split(' ', 1) for d in data]}
-    return [k + ' ' + data_dict[k] for k in [t.split(' ', 1)[0] for t in texts]]
-
-def combine_texts_with_labels(texts, labels, para_info):
-    para_keys = list(para_info.keys())
-    labels = sort_as_texts(labels, texts)
-    
-    result = []
-    for t, l in zip(texts, labels):
-        utt_id_text, tbody = t.split(' ', 1)
-        utt_id_label, lbody = l.split(' ', 1)
-        assert utt_id_text == utt_id_label
-        result_text = []
-        for t_token, l_token in zip(tbody.split(' '), lbody.split(' ')):
-            for para_key in para_keys:
-                if para_key in l_token:
-                    t_token = t_token + f"+{para_key}"
-            result_text.append(t_token)
-        result.append(utt_id_text + ' ' + ' '.join(result_text))
-    return result
-
 def main(trn_file_path, output_dir, mode,
          encoding='shift_jis', gap=0.5, max=10.0, isolate_extra_content=True,
          para_info={'F': 'filler', 'D': 'disfluency', '笑': 'laugh', 'W': 'ambiguity', 'M': 'meta'}):
@@ -762,21 +691,23 @@ def main(trn_file_path, output_dir, mode,
     with open(filepath, 'w') as file:
         file.write('\n'.join(segments))
 
+
 if __name__ == "__main__":
-    CEJC_PATH = "."
-    TRN_PATH = os.path.join(CEJC_PATH, ".")
-    OUT_FILE = os.path.join(TRN_PATH, "output.txt")
+    CSJ_PATH = "/autofs/diamond/share/corpus/CSJ"
+    TRN_PATH = os.path.join(CSJ_PATH, "TRN/Form1")
+    TRN_FILE = os.path.join(TRN_PATH, "core", "A01F0055.trn")
     # TRN_FILE = os.path.join(TRN_PATH, "noncore", "A01F0019.trn")
     # TRN_FILE = os.path.join(TRN_PATH, "core", "D01F0002.trn")
+    OUT_FILE = os.path.basename(TRN_FILE).replace(".trn", ".txt")
 
     import glob
+    from tqdm import tqdm
 
     tagged_token_count = {}
     tag_count = {}
 
     # generator = tqdm(sorted(glob.glob(os.path.join(TRN_PATH, "**", "*.trn"), recursive=True)))
-    generator = sorted(glob.glob(os.path.join(TRN_PATH, "*.txt"), recursive=True))
-    # print(generator)
+    generator = sorted(glob.glob(os.path.join(TRN_PATH, "**", "*.trn"), recursive=True))
     for trn_file in generator:
         parsed = parse_trn_file(trn_file)
         connected = connect_utterances(parsed)
@@ -801,6 +732,8 @@ if __name__ == "__main__":
                 else:
                     print(f"{te}+{ta} ", end='')
             print("")
+        import ipdb; ipdb.set_trace()
+
         # for line in tags:
         #     _, tt = line.split(' ', 1)
         #     for t in tt.split(' '):
