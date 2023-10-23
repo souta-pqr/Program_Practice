@@ -261,9 +261,7 @@ def make_text_tokenized_kana(flattened_trn,
         # text = text.replace('<咳>', '')
         # text = text.replace('<息>', '')
         
-        # 不要な文字の削除z
-        text = text.replace('◇', '')
-        text = text.replace('＃', '')
+        # 不要な文字の削除
         text = text.replace('。', '')
         text = text.replace('?', '')
 
