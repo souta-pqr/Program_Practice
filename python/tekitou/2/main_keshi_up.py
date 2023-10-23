@@ -21,6 +21,14 @@ current_text = ""
 current_pronunciation = ""
 prev_start_time = None
 counter = 1
+
+# 最初の会話ID、発話単位の開始時刻、終了時刻、話者ラベルを出力テキストに追加
+conversation_id = format(counter, '04d')
+start_time = df['発話単位の開始時刻'].iloc[0]
+end_time = df['発話単位の終了時刻'].iloc[0]
+speaker_label = df['話者ラベル'].iloc[0]
+output_text += f"{conversation_id} {start_time:.3f}-{end_time:.3f} {speaker_label}:\n"
+
 for i, row in df.iterrows():
     bunsetsu_flag = row['文節頭フラグ']
     start_time = row['発話単位の開始時刻']
@@ -28,8 +36,8 @@ for i, row in df.iterrows():
         if current_text:
             output_text += f"{current_text} & {current_pronunciation}\n"
         if start_time != prev_start_time and current_text:
-            conversation_id = format(counter, '04d')
             counter += 1
+            conversation_id = format(counter, '04d')
             start_time = row['発話単位の開始時刻']
             end_time = row['発話単位の終了時刻']
             speaker_label = row['話者ラベル']
@@ -43,6 +51,7 @@ for i, row in df.iterrows():
     if re.search(r'\([A-Z]', text) and not re.search(r'[◇＃]+', text):
         katakana_text = convert_to_katakana(text)
         katakana_text_only = re.sub(r'[^ァ-ヴーｱ-ﾝﾞﾟ]', '', katakana_text)
+        # katakana_text = katakana_text.replace(':', 'ー')
         if katakana_text_only == pronunciation:
             pronunciation = katakana_text
             current_text += text
@@ -60,8 +69,9 @@ for i, row in df.iterrows():
         pronunciation = pronunciation[:index_end] + ')' + pronunciation[index_end:]
 
     # '(X ＃＃＃＃)。'や'(L ◇)'や'(L (X ＃＃＃＃))。'のようなパターンを削除する
-    current_text += re.sub(r'\([A-Z] [＃◇]+\)。|\([A-Z] [＃◇]+\)|\([A-Z] \([A-Z] [＃◇]+\)\)。', '', text)
-    current_pronunciation += re.sub(r'\([A-Z] [＃◇]+\)。|\([A-Z] [＃◇]+\)|\([A-Z] \([A-Z] [＃◇]+\)\)。', '', pronunciation)
+    current_text += re.sub(r'\([A-Z] [＃◇]+\)。|\([A-Z] [＃◇]+\)|\([A-Z] \([A-Z] [＃◇]+\)\)。|＜[^＞]*＞', '', text)
+    current_pronunciation += re.sub(r'\([A-Z] [＃◇]+\)。|\([A-Z] [＃◇]+\)|\([A-Z] \([A-Z] [＃◇]+\)\)。|＜[^＞]*＞', '', pronunciation)
+
 
     prev_start_time = start_time
 

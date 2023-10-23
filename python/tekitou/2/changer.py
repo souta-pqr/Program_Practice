@@ -774,7 +774,7 @@ if __name__ == "__main__":
 
     # generator = tqdm(sorted(glob.glob(os.path.join(TRN_PATH, "**", "*.trn"), recursive=True)))
     generator = sorted(glob.glob(os.path.join(TRN_PATH, "*.txt"), recursive=True))
-    # print(generator)
+    print(generator)
     for trn_file in generator:
         parsed = parse_trn_file(trn_file)
         connected = connect_utterances(parsed)
