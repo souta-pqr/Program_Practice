@@ -64,7 +64,7 @@ for i, row in df.iterrows():
         katakana_text = katakana_text.replace('LONGVOWEL', 'ー')
         katakana_text_only = re.sub(r'[^ァ-ヴーｱ-ﾝﾞﾟ]', '', katakana_text)
         # print(katakana_text_only)
-        # katakana_text = katakana_text.replace(':', 'ー')
+        katakana_text = katakana_text.replace(':', 'ー')
         if katakana_text_only == pronunciation:
             pronunciation = katakana_text
             current_text += text
@@ -85,6 +85,9 @@ for i, row in df.iterrows():
     current_text += re.sub(r'\([A-Z] [＃◇]+\)。|\([A-Z] [＃◇]+\)|\([A-Z] \([A-Z] [＃◇]+\)\)。|＜[^＞]*＞', '', text)
     current_pronunciation += re.sub(r'\([A-Z] [＃◇]+\)。|\([A-Z] [＃◇]+\)|\([A-Z] \([A-Z] [＃◇]+\)\)。|＜[^＞]*＞', '', pronunciation)
 
+    # 'D'と'F'以外のアルファベットを消す処理
+    # current_text = re.sub(r'\([^DF]\)', '', current_text)
+    # current_pronunciation = re.sub(r'\([^DF]\)', '', current_pronunciation)
 
     prev_start_time = start_time
 

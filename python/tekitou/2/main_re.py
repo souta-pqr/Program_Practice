@@ -51,21 +51,19 @@ for i, row in df.iterrows():
 
     text = row['タグ付き書字形']
     pronunciation = row['発音'] if pd.notnull(row['発音']) else ''
-    text1 = text
-    # if re.search(r'\(.*\|', text1):
-    #     text1 = re.sub(r'\([A-Z] [ァ-ヴーｱ-ﾝﾞﾟ]*\)|[A-Z]', '', text1)
-    #     print(text1)
 
-    #'ー'がpykakasiが対応していないので，変な処理を入れる
-    if re.search(r'\([A-Z]', text1) and not re.search(r'[◇＃]+', text1):
-        if re.search(r'\(.*\|', text1):
-            text1 = re.sub(r'\|[^)]*', '', text1)
-        katakana_text = convert_to_katakana(text1)
-        # 一時的に置き換えた文字列を再度'ー'に戻す
+    # '(D'と'(F'以外のパターン の文字列'(アルファベット(A~Z)'といったものを削除する
+    if re.search(r'\([A-GH-Z] [^)]+\)', text) and not re.search(r'[◇＃]+', text):
+        text = re.sub(r'\(([A-GH-Z]) [^)]+\)', r'\1', text)
+
+
+    if re.search(r'\([A-Z]', text) and not re.search(r'[◇＃]+', text):
+        katakana_text = convert_to_katakana(text)
         katakana_text = katakana_text.replace('LONGVOWEL', 'ー')
         katakana_text_only = re.sub(r'[^ァ-ヴーｱ-ﾝﾞﾟ]', '', katakana_text)
+        # print(katakana_text_only)
+        # katakana_text = katakana_text.replace(':', 'ー')
         if katakana_text_only == pronunciation:
-            print(katakana_text)
             pronunciation = katakana_text
             current_text += text
             current_pronunciation += pronunciation

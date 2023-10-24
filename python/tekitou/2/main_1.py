@@ -33,6 +33,9 @@ end_time = df['発話単位の終了時刻'].iloc[0]
 speaker_label = df['話者ラベル'].iloc[0]
 output_text += f"{conversation_id} {start_time:.3f}-{end_time:.3f} {speaker_label}:\n"
 
+# テキストファイルへの出力用ファイルオブジェクトを作成
+moji_file = open('moji.txt', 'w')
+
 for i, row in df.iterrows():
     bunsetsu_flag = row['文節頭フラグ']
     start_time = row['発話単位の開始時刻']
@@ -63,7 +66,7 @@ for i, row in df.iterrows():
         katakana_text = convert_to_katakana(text1)
         katakana_text = katakana_text.replace('LONGVOWEL', 'ー')
         katakana_text_only = re.sub(r'[^ァ-ヴーｱ-ﾝﾞﾟ]', '', katakana_text)
-        print(katakana_text_only)
+        # print(katakana_text_only)
         # katakana_text = katakana_text.replace(':', 'ー')
         if katakana_text_only == pronunciation:
             pronunciation = katakana_text
@@ -85,6 +88,12 @@ for i, row in df.iterrows():
     current_text += re.sub(r'\([A-Z] [＃◇]+\)。|\([A-Z] [＃◇]+\)|\([A-Z] \([A-Z] [＃◇]+\)\)。|＜[^＞]*＞', '', text)
     current_pronunciation += re.sub(r'\([A-Z] [＃◇]+\)。|\([A-Z] [＃◇]+\)|\([A-Z] \([A-Z] [＃◇]+\)\)。|＜[^＞]*＞', '', pronunciation)
 
+    # ここで処理を走らせると，まったく，形成されていない，current_textでおこなうため，あまり意味がない
+    # 'D'と'F'以外のアルファベットを消す処理
+    # if not ('D' in current_text or 'F' in current_text):
+    #     moji_file.write(current_text + '\n')
+    #     current_text = re.sub(r'[A-Z]', '', current_text)
+    #     current_pronunciation = re.sub(r'[A-Z]', '', current_pronunciation)
 
     prev_start_time = start_time
 
@@ -93,3 +102,5 @@ if current_text:
 
 with open('output.txt', 'w', encoding='utf-8') as file:
     file.write(output_text)
+
+# moji_file.close()
