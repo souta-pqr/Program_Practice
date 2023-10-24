@@ -8,6 +8,10 @@ def convert_to_katakana(text):
     k.setMode('K', 'K')  # カタカナをカタカナに（変換なし）
     k.setMode('J', 'K')  # 漢字をカタカナに
     conv = k.getConverter()
+
+    # 'ー'を一時的に別の文字列に置き換える
+    text = text.replace('ー', 'LONGVOWEL')
+
     return conv.do(text)
 
 # CSVファイルを読み込み
@@ -48,9 +52,18 @@ for i, row in df.iterrows():
     text = row['タグ付き書字形']
     pronunciation = row['発音'] if pd.notnull(row['発音']) else ''
 
+    #強引に追加
+    text1 = text
+
     if re.search(r'\([A-Z]', text) and not re.search(r'[◇＃]+', text):
-        katakana_text = convert_to_katakana(text)
+        if re.search(r'\(.*\|', text):
+            text1 = re.sub(r'\|[^)]*', '', text)
+            if re.search(r'\(.*\|\(U ', text):
+                text1 = re.sub(r'\|\s*\(U\s[^)]*\)', '', text)
+        katakana_text = convert_to_katakana(text1)
+        katakana_text = katakana_text.replace('LONGVOWEL', 'ー')
         katakana_text_only = re.sub(r'[^ァ-ヴーｱ-ﾝﾞﾟ]', '', katakana_text)
+        print(katakana_text_only)
         # katakana_text = katakana_text.replace(':', 'ー')
         if katakana_text_only == pronunciation:
             pronunciation = katakana_text
