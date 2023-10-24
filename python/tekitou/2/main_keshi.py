@@ -69,17 +69,17 @@ for i, row in df.iterrows():
             pronunciation = katakana_text
             current_text += text
             current_pronunciation += pronunciation
-            # continue
+            continue
 
-    # matches_start = re.finditer(r'\([A-Z]', text)
-    # for match_start in matches_start:
-    #     index_start = match_start.start()
-    #     pronunciation = pronunciation[:index_start] + '(' + text[index_start+1] + ' ' + pronunciation[index_start:]
+    matches_start = re.finditer(r'\([A-Z]', text)
+    for match_start in matches_start:
+        index_start = match_start.start()
+        pronunciation = pronunciation[:index_start] + '(' + text[index_start+1] + ' ' + pronunciation[index_start:]
 
-    # matches_end = re.finditer(r'\)', text)
-    # for match_end in matches_end:
-    #     index_end = match_end.start()
-    #     pronunciation = pronunciation[:index_end] + ')' + pronunciation[index_end:]
+    matches_end = re.finditer(r'\)', text)
+    for match_end in matches_end:
+        index_end = match_end.start()
+        pronunciation = pronunciation[:index_end] + ')' + pronunciation[index_end:]
 
     # '(X ＃＃＃＃)。'や'(L ◇)'や'(L (X ＃＃＃＃))。'のようなパターンを削除する
     current_text += re.sub(r'\([A-Z] [＃◇]+\)。|\([A-Z] [＃◇]+\)|\([A-Z] \([A-Z] [＃◇]+\)\)。|＜[^＞]*＞', '', text)

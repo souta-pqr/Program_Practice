@@ -268,6 +268,7 @@ def make_text_tokenized_kana(flattened_trn,
         if remove_privacy_utt:
             if 'R' in text:
                 continue
+        #事前に削除済み
         # if remove_extra_content:
         #     # '<' '>' で囲まれた文字列（<sp>以外）を削除
         #     text = re.sub(r'(<\/?(?!sp\b)[^>]+>)', '', text)
@@ -327,8 +328,8 @@ def remove_tag_from_kana_tagged_string(s: str):
                 # これらのタグの場合はそのまま
                 pass
             else:
-                # # とりあえずセミコロンとカンマで分割
-                # contents = split_tagged_content_with_semicolon_or_comma(content)
+                # とりあえずセミコロンとカンマで分割
+                contents = split_tagged_content_with_semicolon_or_comma(content)
                 # if tag == '?':
                 #     # ? の場合は最初の要素だけ
                 #     content = contents[0]
@@ -555,8 +556,8 @@ def flat_utterances(parsed_or_connected_trn,
     output['flattened_utterances'] = flattened_utterances
 
     #output を 'flat.txt' ファイルに書き込む
-    with open('gbg/flat.txt', 'w') as f:
-        f.write(str(output))
+    # with open('gbg/flat.txt', 'w') as f:
+    #     f.write(str(output))
 
     return output
 
@@ -788,17 +789,36 @@ if __name__ == "__main__":
         # for t in texts:
         #     print(t)
         
+
         texts, tags, segments = make_text_tokenized_kana(flattened)
         # tags = convert_labels_to_flags(tags, "F")
-        for text, tag in zip(texts, tags):
-            print(f"{text.split(' ')[0]} ", end='')
-            for te, ta in zip(text.split(' ')[1:], tag.split(' ')[1:]):
-                ta = ta.replace('N', '')
-                if len(ta) == 0:
-                    print(f"{te} ", end='')
-                else:
-                    print(f"{te}+{ta} ", end='')
-            print("")
+        with open('result.txt', 'w') as f:
+            for text, tag in zip(texts, tags):
+                line = f"{text.split(' ')[0]} "
+                for te, ta in zip(text.split(' ')[1:], tag.split(' ')[1:]):
+                    ta = ta.replace('N', '')
+                    if len(ta) == 0:
+                        line += f"{te} "
+                    else:
+                        line += f"{te}+{ta} "
+                line += "\n"
+                f.write(line)
+
+        #------------------------------------------------
+
+        # texts, tags, segments = make_text_tokenized_kana(flattened)
+        # # tags = convert_labels_to_flags(tags, "F")
+        # for text, tag in zip(texts, tags):
+        #     print(f"{text.split(' ')[0]} ", end='')
+        #     for te, ta in zip(text.split(' ')[1:], tag.split(' ')[1:]):
+        #         ta = ta.replace('N', '')
+        #         if len(ta) == 0:
+        #             print(f"{te} ", end='')
+        #         else:
+        #             print(f"{te}+{ta} ", end='')
+        #     print("")
+
+        #------------------------------------------------    
         # for line in tags:
         #     _, tt = line.split(' ', 1)
         #     for t in tt.split(' '):
