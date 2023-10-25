@@ -94,5 +94,5 @@ for i, row in df.iterrows():
 if current_text:
     output_text += f"{current_text} & {current_pronunciation}\n"
 
-with open('output.txt', 'w', encoding='utf-8') as file:
+with open('shori/output.txt', 'w', encoding='utf-8') as file:
     file.write(output_text)

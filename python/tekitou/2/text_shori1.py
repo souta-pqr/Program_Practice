@@ -1,7 +1,7 @@
 import re
 
 # ファイルからテキストを読み込む
-with open('output.txt', 'r') as f:
+with open('sorted_output.txt', 'r') as f:
     text = f.read()
 
 # テキストを行ごとに分割
@@ -15,11 +15,12 @@ for line in lines:
         cleaned_lines.append(line)
         continue
     
-    if 'D' not in line or 'F' not in line:
-        cleaned_line = re.sub(r'\([A-CEG-Z] ', '', line)
-        cleaned_line = re.sub(r'\)', '', cleaned_line)
-    else:
-        cleaned_line = line
+    if ('D' in line or 'F' in line) and not re.search('[A-CEG-Z]', line):
+        cleaned_lines.append(line)
+        continue
+
+    cleaned_line = re.sub(r'\([A-CEG-Z] ', '', line)
+    cleaned_line = re.sub(r'\)', '', cleaned_line)
 
     # アルファベットが残っている場合、丸括弧で囲む
     cleaned_line = re.sub(r'([A-Z] [^\s]+)', r'\1)', cleaned_line)
