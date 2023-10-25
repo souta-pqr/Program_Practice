@@ -1,7 +1,7 @@
 import re
 
 # ファイルからテキストを読み込む
-with open('sorted_output.txt', 'r') as f:
+with open('shori/sorted_output.txt', 'r') as f:
     text = f.read()
 
 # テキストを行ごとに分割
