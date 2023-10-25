@@ -34,5 +34,5 @@ for line in lines:
 cleaned_text = '\n'.join(cleaned_lines)
 
 # 結果をファイルに書き込む
-with open('text_process.txt', 'w') as f:
+with open('used/text_process.txt', 'w') as f:
     f.write(cleaned_text)
