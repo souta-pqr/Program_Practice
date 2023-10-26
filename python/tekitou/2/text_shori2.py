@@ -42,6 +42,9 @@ for line in lines:
     # アルファベットの後に半角空白がない場合に半角空白を追加
     cleaned_line = re.sub(r'([A-Z])(?=[^ ])', r'\1 ', cleaned_line)
 
+    # '+'と'{}'の中身を含むすべての部分を排除する
+    cleaned_line = re.sub(r'\+{.*?}', '', cleaned_line)
+
     cleaned_lines.append(cleaned_line)
 
 # 結果を出力

@@ -266,6 +266,7 @@ def make_text_tokenized_kana(flattened_trn,
         text = text.replace('?', '')
         # Dタグの中に'＃'が入っている行への対処
         text = text.replace('＃', '')
+        text = text.replace('＊', '')
 
         if remove_privacy_utt:
             if 'R' in text:
