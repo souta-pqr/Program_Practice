@@ -16,8 +16,8 @@ for line in lines:
         continue
     
     if ('D' in line or 'F' in line) and not re.search('[A-CEG-Z]', line):
-        # 2つ連続した閉じ括弧を1つにする
-        cleaned_line = re.sub(r'\)\)', r')', line)
+        # 2つ以上連続した閉じ括弧を1つにする
+        cleaned_line = re.sub(r'\)\)+', r')', line)
         cleaned_lines.append(cleaned_line)
         continue
 
@@ -43,7 +43,7 @@ for line in lines:
     cleaned_line = re.sub(r'([A-Z])(?=[^ ])', r'\1 ', cleaned_line)
 
     # '+'と'{}'の中身を含むすべての部分を排除する
-    cleaned_line = re.sub(r'\+{.*?}', '', cleaned_line)
+    cleaned_line = re.sub(r'\+?{.*?}', '', cleaned_line)
 
     cleaned_lines.append(cleaned_line)
 
