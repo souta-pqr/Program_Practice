@@ -767,7 +767,7 @@ def main(trn_file_path, output_dir, mode,
 if __name__ == "__main__":
     CEJC_PATH = "."
     TRN_PATH = os.path.join(CEJC_PATH, "used")
-    OUT_FILE = os.path.join(TRN_PATH, "text_process.txt")
+    OUT_FILE = os.path.join(TRN_PATH, "last.txt")
     # TRN_FILE = os.path.join(TRN_PATH, "noncore", "A01F0019.trn")
     # TRN_FILE = os.path.join(TRN_PATH, "core", "D01F0002.trn")
 

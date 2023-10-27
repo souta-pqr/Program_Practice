@@ -71,6 +71,7 @@ for i, row in df.iterrows():
             current_pronunciation += pronunciation
             continue
 
+
     matches_start = re.finditer(r'\([A-Z]', text)
     for match_start in matches_start:
         index_start = match_start.start()
@@ -84,10 +85,6 @@ for i, row in df.iterrows():
     # '(X ＃＃＃＃)。'や'(L ◇)'や'(L (X ＃＃＃＃))。'のようなパターンを削除する
     current_text += re.sub(r'\([A-Z] [＃◇]+\)。|\([A-Z] [＃◇]+\)|\([A-Z] \([A-Z] [＃◇]+\)\)。|＜[^＞]*＞', '', text)
     current_pronunciation += re.sub(r'\([A-Z] [＃◇]+\)。|\([A-Z] [＃◇]+\)|\([A-Z] \([A-Z] [＃◇]+\)\)。|＜[^＞]*＞', '', pronunciation)
-
-    # 'D'と'F'以外のアルファベットを消す処理
-    # current_text = re.sub(r'\([^DF]\)', '', current_text)
-    # current_pronunciation = re.sub(r'\([^DF]\)', '', current_pronunciation)
 
     prev_start_time = start_time
 
