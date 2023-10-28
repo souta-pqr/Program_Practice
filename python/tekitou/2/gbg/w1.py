@@ -21,6 +21,11 @@ def remove_text(input_file, output_file):
         if (line.strip() == '。 & 。' or line.strip() == '&') and i > 0 and re.match(r'^\d', lines[i-1]):
             output_lines.pop()
         else:
+            # '& の前に半角空白が2つ以上ある場合、半角空白を一つにする
+            line = re.sub(r'\s+&', ' &', line)
+            # '& の前後に半角空白がない場合も、半角空白を一つ入れる
+            line = re.sub(r'([^ ])&', r'\1 &', line)
+            line = re.sub(r'&([^ ])', r'& \1', line)
             output_lines.append(line.strip())
     with open(output_file, 'w') as file:
         file.write('\n'.join(output_lines))

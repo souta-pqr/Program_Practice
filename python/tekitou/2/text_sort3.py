@@ -1,7 +1,7 @@
 import re
 
 # ファイルからテキストを読み込む
-with open('shori/output.txt', 'r') as f:
+with open('shori/connect.txt', 'r') as f:
     text = f.read()
 
 # テキストを行ごとに分割
