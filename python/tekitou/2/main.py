@@ -15,7 +15,7 @@ def convert_to_katakana(text):
     return conv.do(text)
 
 # CSVファイルを読み込み
-df = pd.read_csv('csv/C001_003-morphLUW.csv', encoding='shift-jis')
+df = pd.read_csv('csv/K001_004-morphLUW.csv', encoding='shift-jis')
 
 # 出力用のテキストを初期化
 output_text = "%会話ID:" + df['会話ID'].iloc[0] + "\n"
