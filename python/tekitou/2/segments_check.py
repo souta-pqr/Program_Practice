@@ -1,12 +1,12 @@
 import re
 
 # ファイルを開く
-with open('segments', 'r') as f:
+with open('segments1', 'r') as f:
     lines = f.readlines()
 
 # パターンを検索し、数値の差を計算する
-pattern1 = 'K011_009aIC01'
-pattern2 = 'K011_009aIC02'
+pattern1 = 'T014_012IC03'
+pattern2 = 'T014_012IC04'
 sum1 = sum([float(line.split()[-1]) - float(line.split()[-2]) for line in lines if pattern1 in line])
 sum2 = sum([float(line.split()[-1]) - float(line.split()[-2]) for line in lines if pattern2 in line])
 
