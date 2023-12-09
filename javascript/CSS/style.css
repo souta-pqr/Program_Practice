@@ -1,37 +1,25 @@
 @charset "utf-8";
 
-div {
-    /* margin-bottom: 200px;
-    margin-left:200px; 
-    margin-right: 200px; 
-    margin-top: 200px; */
-    margin: 200px 200px 200px 200px;
-
-    width: calc(100% - 50px);
-    height: 100px;
-    background-color: #337ddd7c;
-    transform: translate(-100px, 30px) rotate(90deg) skew(60deg);
-}
-
-
-p {
-    color: rgb(194, 31, 167);
-    background-color: burlywood;
-    background: url("./pic1.jpg") blueviolet no-repeat;
-    font-weight: bold;
-    font-size: 80px;
-    text-indent: 1em;
-    line-height: 1.8;
-}   
-
-.text {
-    color:greenyellow;
-}
-
-#text {
+.parent p {
     color: red;
 }
 
-a:hover{
-    color:red;
+.parent > p {
+    color: green;
+}
+
+.abc,
+.def {
+    width: 30px;
+    height: 30px;
+    background-color: brown;
+    margin: 10px 10px 10px 10px;
+}
+
+.def.xyz {
+    background-color: red;
+}
+
+.def + a {
+    font-size: 30px;
 }
