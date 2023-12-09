@@ -17,9 +17,21 @@ div {
 p {
     color: rgb(194, 31, 167);
     background-color: burlywood;
-    background-image: url("./pic1.jpg");
+    background: url("./pic1.jpg") blueviolet no-repeat;
     font-weight: bold;
     font-size: 80px;
     text-indent: 1em;
     line-height: 1.8;
 }   
+
+.text {
+    color:greenyellow;
+}
+
+#text {
+    color: red;
+}
+
+a:hover{
+    color:red;
+}
