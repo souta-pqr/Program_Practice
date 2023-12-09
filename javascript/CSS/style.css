@@ -1,25 +1,70 @@
 @charset "utf-8";
-
-.parent p {
+/* @import "" */
+/* 
+.abc {
     color: red;
 }
 
-.parent > p {
-    color: green;
+.abc, h1.headline{
+    color: red;
 }
 
-.abc,
-.def {
-    width: 30px;
-    height: 30px;
-    background-color: brown;
-    margin: 10px 10px 10px 10px;
+.abc > ul + p {
+    color: blueviolet;
 }
 
-.def.xyz {
-    background-color: red;
+.abc + p {
+    color: red;
 }
 
-.def + a {
-    font-size: 30px;
+.abc > a:hover {
+    color: red;
+} */
+
+p {
+    color:red;
+}
+
+.text {
+    color: blue;
+}
+
+.list > li {
+    color: red;
+}
+
+.list .list-item {
+    color: blue;
+}
+
+.parent > a {
+    color: red;
+}
+a {
+    color: blue !important;
+}
+
+.sample{
+    background-color: #000;
+}
+@media screen and (max-width: 600px) and (min-width: 300px) {
+    .sample {
+        background-color: red;
+    }
+}
+
+.box {
+    text-align: center;
+    padding: 20px;
+    border: 2px solid red;
+    margin: 20px;
+    display: inline;
+}
+
+.line {
+    text-align: center;
+    padding: 20px;
+    border: 2px solid red;
+    margin: 20px;
+    display: block;
 }
