@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 200px;
+            margin: auto;
+        }
+        .cell {
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid black;
+            font-size: 20px;
+        }
+        .circle {
+            color: red;
+        }
+        .cross {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="board">
+        <div class="cell circle">〇</div>
+        <div class="cell cross">✖</div>
+        <div class="cell circle">〇</div>
+        <div class="cell circle">〇</div>
+        <div class="cell cross">✖</div>
+        <div class="cell cross">✖</div>
+        <div class="cell circle">〇</div>
+        <div class="cell circle">〇</div>
+        <div class="cell cross">✖</div>
+    </div>
+</body>
+</html>
