@@ -16,7 +16,9 @@ cells.forEach((cell, i) => {
 
         // 勝者をチェック
         if (checkWinner(board)) {
-            winnerAnnouncement.textContent = currentPlayer + 'の勝利！';
+            setTimeout(() => {
+                winnerAnnouncement.textContent = currentPlayer + 'の勝利！';
+            }, 0);
             return;
         }
 
