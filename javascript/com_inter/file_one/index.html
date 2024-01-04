@@ -1,23 +1,25 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Input and Output Example</title>
-    <script>
-        function processInput() {
-            // Get the user input
-            var userInput = document.getElementById("inputField").value;
-            
-            // Perform some processing on the input
-            var processedResult = "Processed: " + userInput;
-            
-            // Display the result on the page
-            document.getElementById("output").innerHTML = processedResult;
-        }
-    </script>
-</head>
-<body>
-    <input type="text" id="inputField" placeholder="Enter some text">
-    <button onclick="processInput()">Process</button>
-    <div id="output"></div>
-</body>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <link rel ="stylesheet" href="css/style.css">
+        <script src="js/main.js"></script>
+    </head>
+    <body>
+        <h1>合計金額計算</h1>
+        <div class = "item">
+            <div class="title">商品1</div>
+            <input type="number" value ="1980" class="price">
+        </div>
+        <div class = "item">
+            <div class="title">商品2</div>
+            <input type="number" value ="2980" class="price">
+        </div>
+        <div class = "item">
+            <div class="title">商品3</div>
+            <input type="number" value ="4980" class="price">
+        </div>
+        <button id="calc">合計金額を計算</button>
+        <div id="output"></div>
+    </body>
 </html>
