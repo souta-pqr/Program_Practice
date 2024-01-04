@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-<html lang = "ja">
-    <head>
-        <meta charset="utf-8">
-
-        <script>
-            window.addEventListener('DOMContentLoaded', function() {
-                let menu = document.querySelector('#item2').innerHTML;
-                let html = '<strong> 「' + menu + '」 セール中！</strong>';
-                document.querySelector('#sale').innerHTML = html;
-            });
-        </script>
-    </head>
-    <body>
-        <ul>
-            <li id = "item1">りんご</li>
-            <li id = "item2">みかん</li>
-        </ul>
-        <div id = "sale"></div>
-    </body>
+<html>
+<head>
+    <title>Input and Output Example</title>
+    <script>
+        function processInput() {
+            // Get the user input
+            var userInput = document.getElementById("inputField").value;
+            
+            // Perform some processing on the input
+            var processedResult = "Processed: " + userInput;
+            
+            // Display the result on the page
+            document.getElementById("output").innerHTML = processedResult;
+        }
+    </script>
+</head>
+<body>
+    <input type="text" id="inputField" placeholder="Enter some text">
+    <button onclick="processInput()">Process</button>
+    <div id="output"></div>
+</body>
 </html>
