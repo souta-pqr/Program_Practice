@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <style>
+            #item {
+                background: #cef;
+                padding: 1em;
+            }
+        </style>
+    </head>
+    <body>
+        <div id = "item">ホットコーヒー</div>
+
+        <script>
+            const el = document.querySelector('#item');
+
+            el.addEventListener('mouseenter', e => {
+                console.log(e.type, e.x, e.y);
+            });
+
+            el.addEventListener('mouseleave', e => {
+                console.log(e.type, e.x, e.y);
+            });
+
+            el.addEventListener('mousemove', e => {
+                console.log(e.type, e.x, e.y);
+            });
+        </script>
+    </body>
+</html>

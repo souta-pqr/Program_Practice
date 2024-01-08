@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <textarea id="text">注文</textarea>
+
+        <script>
+            const el = document.querySelector('#text');
+
+            el.addEventListener('keyup', e => {
+                console.log(e.type, el.value, e.key, e.code, e.keyCode);
+            });
+
+            el.addEventListener('input', e => {
+                console.log(e.type, el.value, e.key, e.code, e.keyCode);
+            });
+
+            el.addEventListener('change', e => {
+                console.log(e.type, el.value);
+            });
+        </script>
+    </body>
+</html>

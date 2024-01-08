@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            .caution li:nth-of-type(odd) {
+                background: #ff0;
+                color: #000;
+            }
+            .caution li:nth-of-type(even) {
+                background: #000;
+                color: #ff0;
+            }
+        </style>
+    </head>
+
+    <body>
+        <ul id="menu">
+            <li>ホットコーヒー</li>
+            <li>アイスコーヒー</li>
+            <li>チョコケーキ</li>
+        </ul>
+
+    <script>
+        const elMenu = document.querySelector('#menu');
+
+        elMenu.classList.add('caution');
+
+        setTimeout(() => {
+            elMenu.classList.remove('caution');
+        }, 1000);
+    </script>
+    </body>
+</html>
