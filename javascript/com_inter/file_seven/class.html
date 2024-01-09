@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <style>
+            #msg {
+                border: solid 2px #ccc;
+                border-radius: 0.3em;
+                padding: 1em;
+            }
+            #msgBtn {
+                border: solid 2px #ccc;
+                border-radius: 0.3em;
+                text-align: center;
+                padding: 0.3em;
+            }
+            #msgBody {
+                overflow: hidden;
+                height: 30px;
+                opacity: 0.2;
+                transition: 0.8s;
+            }
+            .open {
+                overflow-y: scroll !important;
+                height: 200px !important;
+                opacity: 1 !important;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="msg">
+            <div id="msgBody"></div>
+            <div id="msgBtn">続きを読む</div>
+        </div>
+
+        <script>
+            const tDummy = "conffee cake".repeat(100);
+            document.querySelector("#msgBody").innerHTML = tDummy;
+
+            document.querySelector("#msgBtn").addEventListener("click", function() {
+                document.querySelector("#msgBody").classList.toggle("open");
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <div id="sendForm">
+            <div>
+                名前：<input type="text" id="name" name="name" size="40" value="匿名希望">
+            </div>
+                性別：
+                <label>
+                    <input type="radio" id="sexM" name="sex" value="male">男
+                </label>
+                <label>
+                    <input type="radio" id="sexF" name="sex" value="female">女
+                </label>
+                <label>
+                    <input type="radio" id="sexO" name="sex" value="other">その他
+                </label>
+            </div>
+            <div>
+                <label for="country">居住国：</label>
+                <select id="country" name="country" aria-label="居住国">
+                    <option value="japan">日本</option>
+                    <option value="china">中国</option>
+                    <option value="korea">韓国</option>
+                    <option value="usa">アメリカ</option>
+                    <option value="other">その他</option>
+                </select>
+            </div>
+            <div>
+                <label>
+                    <input type="checkbox" id="dm" name="dm" value="on">お知らせの受信
+                </label>
+            </div>
+            <div>
+                ご意見：<br>
+                <textarea rows="4" cols="40" id="opinion">特になし</textarea>
+            </div>
+            <div>
+                <button type="button" id="btnAuto">自動入力</button>
+                <input type="submit" value="送信">
+            </div>
+        </form>
+
+        <script>
+            window.addEventListener("DOMContentLoaded", e => {
+                const elName = document.querySelector("#name");
+                const elSex = Array.from(
+                    document.querySelectorAll('[name="sex"]'));
+                const elCountry = document.querySelector("#country");
+                const elDm = document.querySelector("#dm");
+                const elOpinion = document.querySelector("#opinion");
+
+                const elBtnAuto = document.querySelector("#btnAuto");
+                const elForm = document.querySelector("#sendForm");
+
+                elBtnAuto.addEventListener("click", e => {
+                    elName.value = "山田太郎";
+                    elSex[0].checked = true;
+                    elCountry.value = "japan";
+                    elDm.checked = true;
+                    elOpinion.value = "こんにちは";
+                });
+
+                elForm.addEventListener('submit', e => {
+                    const vName = elName.value;
+                    const vSex = elSex.find(el => el.checked).value;
+                    const vCountry = elCountry.value;
+                    const vDm = elDm.checked ? elDm.value : null;
+                    const vOpinion = elOpinion.value;
+
+                    console.log(vName, vSex, vCountry, vDm, vOpinion);
+
+                    e.preventDefault();
+                });
+            });
+            
+        </script>
+    </body>
+</html>

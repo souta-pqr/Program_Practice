@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <style>
+            .bubble {
+                position: fixed;
+                z-index: -99;
+                width: 100px;
+                height: 100px;
+                border-radius: 50px;
+                background: #48d;
+                opacity: 0.2;
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+            const tDummy = "coffee cake".repeat(100);
+            const elDummy = document.createTextNode(tDummy);
+            document.body.appendChild(elDummy);
+
+            const size = 30;
+            const elArr = [];
+            for (let i = 0; i < size; i++) {
+                const x = Math.random() * window.innerWidth - 50;
+                const y = Math.random() * window.innerHeight - 50;
+
+                elArr[i] = document.createElement("div");
+                elArr[i].classList.add("bubble");
+                elArr[i].style.left = '${x}px';
+                elArr[i].style.top = '${y}px';
+
+                document.body.appendChild(elArr[i]);
+            }
+
+            let tmOld = 0;
+
+            const step = function(tm) {
+                let tmDif = tm - tmOld;
+                if (tmDif > 1000) {
+                    tmDif = 0;
+                }
+                tmOld = tm;
+
+                console.log('time: ${tm}, tmdif: ${tmDif}');
+
+                elArr.forEach(el => {
+                    const xEl = parseFloat(el.style.left);
+                    const yEl = parseFloat(el.style.top);
+
+                    let x = xEl;
+                    let y = yEl - (tmDif / 80);
+
+                    if (y < -100) {
+                        y = window.innerHeight;
+                    }
+
+                    el.style.left = '${x}px';
+                    el.style.top = '${y}px';
+                });
+
+                requestAnimationFrame(step);
+            };
+
+            requestAnimationFrame(step);
+        </script>
+    </body>
+</html>

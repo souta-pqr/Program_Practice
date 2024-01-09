@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <div id="outer">
+            <a href="https://www.google.com/" id="link"><span id="inner">リンク</span></a>
+        </div>
+
+        <script>
+
+            document.querySelector('#inner').addEventListener("click", e => {
+                console.log("#inner", e.returnValue, e.cancelBubble);
+                
+                e.preventDefault();
+            });
+
+            document.querySelector('#link').addEventListener("click", e => {
+
+                e.stopPropagation();
+                console.log("#link", e.returnValue, e.cancelBubble);
+            });
+
+            document.querySelector("#outer").addEventListener("click", e => {
+                console.log("#outer", e.returnValue, e.cancelBubble);
+            });
+        </script>
+    </body>
+</html>

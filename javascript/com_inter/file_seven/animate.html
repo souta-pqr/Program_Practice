@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <style>
+            .animArea {
+                position: relative;
+                width: 100px;
+                height: 400px;
+                margin: 50px auto;
+                background: #eee;
+            }
+            .box {
+                position: absolute;
+                width: 100px;
+                height: 100px;
+                top:300px;
+                background: #faa;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="animArea">
+            <div class="box"></div>
+        </div>
+        <script>
+            const elBox = document.querySelector(".box");
+            anim(elBox);
+            async function anim(el) {
+                await el.animate({
+                    borderRadius: ['0px', '50px', '0px'],
+                    transform: ['', 'rotate(720deg)', '']
+                }, 1500)
+                .finished;
+
+            await el.animate([
+                {top: '300px', background: '#faa'},
+                {top: '0px', background: '#aaf'},
+                {top: '300px', background: '#faa'}
+            ], {
+                delay: 250,
+                duration: 750,
+                easing: 'ease-in-out',
+                endDelay: 250
+            }).finished;
+            anim(el);
+        };
+        </script>
+    </body>
+</html>
