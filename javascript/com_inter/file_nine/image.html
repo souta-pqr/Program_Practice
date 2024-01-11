@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utg-8">
+        <style>
+            canvas {
+                background: url(./img/transparent.png);
+                border: solid 1px #888;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width="400" height="300"></canvas>
+
+        <script>
+            const canvas = document.querySelector('#canvas');
+            const context = canvas.getContext('2d');
+
+            const img = new Image();
+            img.onload = function() {
+                context.drawImage(img, 150, 250, 700, 500, 25, 25, 350, 250);
+            };
+            img.src = './img/DT1502.jpg';
+        </script>
+    </body>
+</html>

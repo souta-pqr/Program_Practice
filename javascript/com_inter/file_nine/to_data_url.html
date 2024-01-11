@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utg-8">
+        <style>
+            canvas {
+                background: url(./img/transparent.png);
+                border: solid 1px #888;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width="400" height="100"></canvas>
+        <script>
+            const canvas = document.querySelector('#canvas');
+            const context = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            
+            for (let i=0; i<h; i++) {
+                const gradation = Math.trunc(255 * i / h);
+                const r = gradation;
+                const g = 255 - gradation;
+                const b = 255;
+                context.fillStyle = `rgb(${r}, ${g}, ${b})`;
+
+                context.fillRect(i/2, i, w-h/2, 1);
+            }
+
+            const dtUrl = canvas.toDataURL();
+            console.log(dtUrl);
+
+            const elImg = document.createElement('img');
+            elImg.setAttribute('src', dtUrl);
+            document.querySelector('body').appendChild(elImg);
+        </script>
+    </body>
+</html>

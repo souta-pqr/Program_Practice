@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <style>
+            canvas {
+                background: url(./img/transparent.png);
+                border:solid 1px #888;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas width="400" height="300"></canvas>
+        <script>
+            const canvas = document.querySelector('canvas');
+            const context = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const size = 40;
+            let x = 0;
+            let y = 0;
+
+            context.fillStyle = '#faa';
+            context.strokeStyle = '#44f';
+            context.lineWidth = 8;
+
+            let tmOld = 0;
+
+            const step = function(tm) {
+                let tmDif = tm - tmOld;
+                if (tmDif > 1000) {
+                    tmDif = 0;
+                }
+                tmOld = tm;
+
+            x += tmDif / 4;
+            y += tmDif / 8;
+            if (x >= w + size) { x = -size;}
+            if (y >= h + size) { y = -size;}
+
+            context.clearRect(0, 0, w, h);
+            context.beginPath();
+            context.arc(x, y, size, 0, 2, Math.PI);
+            context.fill();
+            context.stroke();
+
+            requestAnimationFrame(step);
+            
+        };
+        requestAnimationFrame(step);
+        </script>
+    </body>
+</html>

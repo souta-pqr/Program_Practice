@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset = "utf-8">
+        <style>
+            canvas {
+                background: url(./img/transparent.png);
+                border: solid 1px #888;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width="400" height="300"></canvas>
+        <script>
+            const canvas = document.querySelector('#canvas');
+            const context = canvas.getContext('2d');
+
+            const x0 = 50, y0 = 25;
+            const cx1 = 350, cy1 = 25;
+            const cx2 = 250, cy2 = 275;
+            const x = 50, y = 275;
+
+            context.beginPath();
+            context.moveto(x0, y0);
+            context.bezierCurveTo(cx1, cy1, cx2, cy2, x, y);
+            context.stroke();
+
+            context.linewidth = 2;
+
+            context.beginPath();
+            context.moveTo(x0, y0);
+            context.lineTo(cx1, cy1);
+            context.moveTo(x, y);
+            context.lineTo(cx2, cy2);
+            context.stroke();
+
+            context.fillRect(x0-10, y0-10, 20, 20);
+            context.fillRect(cx1-10, cy1-10, 20, 20);
+            context.fillRect(cx2-10, cy2-10, 20, 20);
+            context.fillRect(x-10, y-10, 20, 20);
+        </script>
+    </body>
+</html>

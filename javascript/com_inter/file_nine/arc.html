@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <style>
+            canvas {
+                background: url(./img/transparent.png);
+                border: solid 1px #888;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width="400" height="300"></canvas>
+
+        <script>
+            const canvas = document.querySelector('#canvas');
+            const context = canvas.getContext('2d');
+
+            context.fillStyle = '#faa';
+            context.strokeStyle = '#44f';
+            context.lineWidth = 8;
+            context.lineCap = 'round';
+
+            context.beginPath();
+            context.arc(100, 150, 80, 0, 240/180 * Math.PI);
+            context.fill();
+            context.stroke();
+
+            context.strokeRect(175, 145, 10, 10);
+
+            context.beginPath();
+            context.arc(150, 100, 80, 0, 240/180*Math.PI, true);
+            context.fill();
+            context.stroke();
+
+            context.strokeRect(225, 95, 10, 10);
+
+            context.beginPath();
+            context.arc(300, 200, 80, 0, 360/180*Math.PI);
+            context.fill();
+            context.stroke();
+
+            context.strokeRect(375, 195, 10, 10);
+            
+        </script>
+    </body>
+</html>
