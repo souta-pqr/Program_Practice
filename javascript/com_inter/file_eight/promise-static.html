@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>Promise</title>
+        <script src="./promise-static-wait-func.js"></script>
+
+        <script>
+            setTimeout(() => {
+                console.log('--- Promise.all() その１ ---');
+
+                const arr = [p(1, true), p(2, true), p(3, true)];
+
+                Promise.all(arr).then(data => {
+                    console.log('--> then :', data);
+                }).catch(data => {
+                    console.log('--> catch :', data);
+                });
+            }, 0);
+
+            setTimeout(() => {
+                console.log('--- Promise.all() その２ ---');
+                
+                const arr = [p(1, true), p(2, false), p(3, true)];
+
+                Promise.all(arr).then(data => {
+                    console.log('--> then :', data);
+                }).catch(data => {
+                    console.log('--> catch :', data);
+                });
+            }, 100);
+        </script>
+    </head>
+</html>

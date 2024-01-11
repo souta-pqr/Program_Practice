@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset = "UTF-8">
+        <title>JSON</title>
+        <script>
+            const shop = {
+                menu: [
+                    {name: "ホットコーヒー", "price": 450},
+                    {name: "カフェラテ", "price": 500},
+                    {name: "ホワイトモカ", "price": 550},
+                    {name: "抹茶ラテ", "price": 550},
+                ],
+                order: null,
+                open: true
+            };
+
+            console.log(JSON.stringify(shop, null, '   '));
+        </script>
+    </head>
+</html>

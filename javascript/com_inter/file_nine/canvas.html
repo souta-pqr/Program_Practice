@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            canvas {
+                background: url(./img/transparent.png);
+                border: solid 1px #888;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width ="400" height="300"></canvas>
+
+        <script>
+            const canvas = document.querySelector('#canvas');
+            const context = canvas.getContext('2d');
+
+            console.log(`${canvas}`);
+            console.log(`${context}`);
+
+            console.log(canvas.width);
+            console.log(canvas.height);
+        </script>
+    </body>
+</html>

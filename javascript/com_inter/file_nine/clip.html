@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <style>
+            canvas {
+                background: url(./img/transparent.png);
+                border: solid 1px #888;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width="400" height="300"></canvas>
+
+        <script>
+            const canvas = document.querySelector('#canvas');
+            const context = canvas.getContext('2d');
+
+            context.fillStyle = '#faa';
+            context.strokeStyle = '#44f';
+            context.lineWidth = 8;
+
+            context.beginPath();
+
+            context.moveTo(200, 0);
+            context.lineTo(0, 250);
+            context.lineTo(400, 250);
+            context.closePath()
+
+            context.save();
+            context.clip();
+
+            context.fillRect(25, 25, 150, 250);
+            context.strokeRect(25, 25, 150, 250);
+
+            context.restore();
+
+            context.fillRect(225, 25, 150, 250);
+            context.strokeRect(225, 25, 150, 250);
+        </script>
+    </body>
+</html>

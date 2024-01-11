@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>XMLHttpRequest</title>
+        <script>
+            const url = './data.json';
+
+            var req = new XMLHttpRequest();
+
+            req.addEventListener('load', function() {
+                console.log('---this--');
+                console.log(this.status);
+                console.log(this.statusText);
+                console.log(this.responseURL);
+                console.log(this.response);
+                console.log('---req--');
+                console.log(req.status);
+                console.log(req.statusText);
+                console.log(req.responseURL);
+                console.log(req.response);
+                console.log(req.responseText);
+            });
+
+            req.opne('GET', url);
+            req.send();
+        </script>
+    </head>
+</html>

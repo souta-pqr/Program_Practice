@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset = "utf-8">
+        <title>web_worker_wait</title>
+        <script>
+            const worker = new Worker('web_worker_wait.js');
+
+            worker.postMessage('start');
+
+            worker.onmessage = function(event) {
+                console.log('@html', event.data);
+
+                clearInterval(intervalID);
+            };
+
+            let cnt = 0;
+            const intervalID = setInterval(() => {
+                console.log('@html', 'wait...', cnt++);
+            }, 100);
+        </script>
+    </head>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+    <meta charset="UTF-8">
+    <script>
+        window.addEventListener('DOmContentLoaded', e => {
+            const el = document.createElement('script');
+            el.setAttribute('src', './jsonp.js');
+            document.body.appendChild(el);
+        });
+
+        function back(json) {
+            console.log(JSON.stringify(json, null, '  '));
+        }
+    </script>
+    </head>
+</html>

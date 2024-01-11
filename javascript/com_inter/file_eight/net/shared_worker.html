@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>Shared Worker</title>
+        <script>
+            const worker = new shareWorker('./shared_worker.js');
+
+            worker.port.postMessage('送信!');
+            worker.port.onmessage = function(event) {
+                console.log(event.data);
+            };
+        </script>
+    </head>
+</html>

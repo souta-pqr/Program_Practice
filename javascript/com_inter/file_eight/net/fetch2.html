@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>fetch_async/await</title>
+        <script>
+            (async function() {
+                try{
+                    const url = './data.json';
+                    const response = await fetch(url);
+                    const result = await response.json();
+                    const txt = JSON.stringify(result, null, '  ');
+                    console.log(txt);
+                } catch{}
+            })();
+        </script>
+    </head>
+</html>

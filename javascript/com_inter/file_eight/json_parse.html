@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>JSON Parse</title>
+        <script>
+            const text = '{"name":[{ "first":"Yosuke", "family":"Kurami" }, { "first":"Haruka", "family":"Kurami" }], "order":null, "open":true}';
+
+            let res = null;
+            try {
+                res = JSON.parse(text);
+            } catch (e) {
+                console.log(e.message);
+            }
+            console.log(res);
+        </script>
+    </head>
+</html>

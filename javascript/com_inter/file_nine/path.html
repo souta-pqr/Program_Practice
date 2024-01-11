@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            canvas {
+                background: url(./img/transparent.png);
+                border: solid 1px #888;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width="400" height="300"></canvas>
+
+        <script>
+            const canvas = document.querySelector('#canvas');
+            const context = canvas.getContext('2d');
+
+            context.fillStyle = '#faa';
+            context.strokeStyle = "44f";
+            context.lineWidth = 8;
+            context.lineCap = 'round';
+            context.lineJoin = 'round';
+
+            context.beginPath();
+
+            context.moveTo(100, 50);
+            context.lineTo(10, 250);
+            context.lineTo(190, 250);
+
+            context.moveTo(300, 50);
+            context.lineTo(210, 250);
+            context.lineTo(390, 250);
+            context.closePath()
+
+            context.fill();
+            context.stroke();
+        </script>
+    </body>
+</html>

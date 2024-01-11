@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>Promise</title>
+        <script src="./promise-static-wait-func.js"></script>
+
+        <script>
+            const arr = [p(1, false), p(2, true), p(3, false)];
+
+            Promise.allSettled(arr).then(data => {
+                console.log('--> then :', data);
+            }).catch(data => {
+                console.log('--> catch :', data);
+            });
+        </script>
+    </head>
+</html>

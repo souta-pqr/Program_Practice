@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset = "utf-8">
+        <title>web_worker</title>
+        <script>
+            console.log('---start---');
+
+            const worker = new Worker('./worker.js');
+            const data = {msg: '送信!', arr: [1, 2, 3]};
+
+            worker.postMessage(data);
+
+            worker.onmessage = function(event) {
+                console.log('@html', JSON.stringify(event.data));
+            };
+            console.log('---end---');
+        </script>
+    </head>
+</html>
