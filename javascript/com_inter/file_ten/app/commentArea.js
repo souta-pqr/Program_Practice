@@ -32,4 +32,4 @@ window.addEventListener('DOMContentLoaded', e => {
 
         saveStorageComment();
     }
-})
+});
