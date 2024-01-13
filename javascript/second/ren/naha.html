@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My first three.js app</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://threejs.org/build/three.js"></script>
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        // シーンを作成
+        const scene = new THREE.Scene();
+
+        // カメラを作成
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        // レンダラーを作成
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 立方体のジオメトリを作成
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+
+        // マテリアルを作成
+        const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+
+        // 立方体を作成
+        const cube = new THREE.Mesh(geometry, material);
+
+        // 立方体をシーンに追加
+        scene.add(cube);
+
+        // アニメーションループ
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // 立方体を回転させる
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+
+            // シーンをレンダリング
+            renderer.render(scene, camera);
+        }
+
+        // アニメーションを開始
+        animate();
+
+        // OrbitControlsを使用してカメラの視点操作を可能にする
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    </script>
+</body>
+</html>
