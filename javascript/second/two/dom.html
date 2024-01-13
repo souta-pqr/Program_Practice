@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <script>
+
+            window.addEventListener('DOMContentLoaded', function() {
+                let menu = document.querySelector('#item2').innerText;
+
+                let html = '<strong>「' + menu + '」セール中!</strong>';
+
+                document.querySelector('#sale').innerHTML = html;
+            });
+        </script>
+    </head>
+    <body>
+        <ul>
+            <li id="item1">チョコレートパフェ</li>
+            <li id="item2">チーズケーキ</li>
+        </ul>
+        <div id="sale"></div>
+    </body>
+</html>
