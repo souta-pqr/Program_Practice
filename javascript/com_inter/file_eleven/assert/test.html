@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <script>
+            function z2hNum(s) {
+                [['０', '0'], ['１', '1'], ['２', '2'], ['３', '3'], ['４', '4'], ['５', '5'], ['６', '6'], ['７', '7'], ['８', '8'], ['９', '9'], ['ー', '-'], ['＋', '+'], ['．', '.']]
+                .forEach(([x, y]) => {
+                    const re = new RegExp(x, 'g');
+                    s = s.replace(re, y);
+                });
+
+                return s;
+            }
+
+            function testEqual(a, b) {
+                console.assert(a === b, {a, b});
+            }
+
+            function test_z2hNum() {
+                testEqual(z2hNum('０１２３４５６７８９'), '0123456789');
+                testEqual(z2hNum('０１２３４５６７８９ー＋．'), '0123456789-+.');
+                testEqual(z2hNum('０１２３４５６７８９ー＋．０１２３４５６７８９ー＋．'), '0123456789-+.0123456789-+.');
+
+                // 間違った文字がある場合
+                testEqual(z2hNum('０１２３４５６７８９ー＋．あ'), '0123456789-+.あ');
+                testEqual(z2hNum('０１２３４５６７８９ー＋．０１２３４５６７８９ー＋．あ'), '0123456789-+.0123456789-+.あ');
+            }
+
+            test_z2hNum();
+        </script>
+    </head>
+</html>
