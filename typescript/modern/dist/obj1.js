@@ -1,8 +1,8 @@
 "use strict";
-const obj9 = { arr: [1, 2, 3] };
-const { arr: [foo4] } = obj9;
-console.log(foo4); // Output: 1
-const arr10 = [1, 2, 3, 4, 5, 10, 10];
-const [, , , , , foo5, bar5] = arr10;
-console.log(foo5); // Output: 10
-console.log(bar5); // Output: 10
+const d = new Date();
+console.log(d);
+const date = new Date("2020-02-03T15:00:00+09:00");
+const timeNum = date.getTime();
+console.log(timeNum);
+const date2 = new Date(timeNum);
+console.log(date2);
