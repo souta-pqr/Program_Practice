@@ -1,6 +1,6 @@
-const input1 = "123", input2 = "";
+const foo = {num: 1234};
+const bar = foo;
+const baz = {num: 1234};
 
-const input1isNotEmpty = !!input1;
-console.log(input1isNotEmpty);
-const input2isNotEmpty = !!input2;
-console.log(input2isNotEmpty);
+console.log(foo === bar);
+console.log(foo === baz);
