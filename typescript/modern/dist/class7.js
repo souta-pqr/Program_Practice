@@ -1,14 +1,15 @@
 "use strict";
-class User7 {
-    constructor(name, age) {
-        this.name = name;
-        this.age = age;
-    }
-    isAdult() {
-        return this.age >= 20;
+class User {
+    constructor() {
+        this.name = "";
+        this.age = 0;
     }
 }
-const uhyo7 = new User7("uhyo", 26);
-console.log(uhyo7.name);
-console.log(uhyo7.isAdult());
-// console.log(uhyo7.age);
+const uhyo = new User();
+console.log(uhyo instanceof User);
+console.log({} instanceof User);
+const john2 = {
+    name: "John",
+    age: 16,
+};
+console.log(john2 instanceof User);

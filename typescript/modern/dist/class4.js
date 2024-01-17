@@ -1,5 +1,5 @@
 "use strict";
-class User4 {
+class User3 {
     constructor() {
         this.name = "";
         this.age = 0;
@@ -7,13 +7,11 @@ class User4 {
     isAdult() {
         return this.age >= 20;
     }
-    setAge(newAge) {
-        this.age = newAge;
-    }
 }
-const uhyo4 = new User4();
-const baby = new User4();
-console.log(uhyo4.isAdult());
-uhyo4.setAge(26);
-console.log(uhyo4.isAdult());
-console.log(baby.isAdult());
+const uhyo2 = new User3();
+const john1 = {
+    name: "John",
+    age: 15,
+    isAdult: () => true
+};
+console.log(john1.isAdult());

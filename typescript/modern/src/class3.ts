@@ -1,17 +1,25 @@
-class User2 {
-    name?: string;
-    age: number = 0;
+class User2<T> {
+    name: string;
+    #age: number;
+    readonly data: T;
+
+    constructor(name: string, age: number, data: T) {
+        this.name = name;
+        this.#age = age;
+        this.data = data;
+    }
+    
+    public isAdult(): boolean {
+        return this.#age >= 20;
+    }
 }
 
-const uhyo2 = new User2();
-console.log(uhyo2.name);
-uhyo2.name = "uhyo";
-console.log(uhyo2.name);
+const uhyo1 = new User2<string>("uhyo", 3, "example");
+const data = uhyo1.data;
 
-class User3 {
-    readonly name: string = "";
-    age: number = 0;
-}
+const john = new User2("John", 30, {hobby: "game"});
+const hobby = john.data.hobby;
 
-const uhyo3 = new User3();
-// uhyo3.name = "uhyo"; // Error
+console.log(uhyo1.isAdult());
+console.log(john.isAdult());
+console.log(data);

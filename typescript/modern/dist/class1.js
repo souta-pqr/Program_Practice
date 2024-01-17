@@ -1,12 +1,8 @@
 "use strict";
-class User {
-    constructor() {
-        this.name = '';
-        this.age = 0;
-    }
+console.log("Hello");
+class C {
 }
-const uhyo = new User();
-console.log(uhyo.name);
-console.log(uhyo.age);
-uhyo.age = 26;
-console.log(uhyo.age);
+(() => {
+    console.log("uhyo");
+})();
+console.log("world");

@@ -1,18 +1,14 @@
-class User7 {
-    name: string;
-    private age: number;
-
-    constructor(name: string, age: number) {
-        this.name = name;
-        this.age = age;
-    }
-
-    public isAdult(): boolean {
-        return this.age >= 20;
-    }
+class User {
+    name: string = "";
+    age: number = 0;
 }
 
-const uhyo7 = new User7("uhyo", 26);
-console.log(uhyo7.name);
-console.log(uhyo7.isAdult());
-// console.log(uhyo7.age);
+const uhyo = new User();
+console.log(uhyo instanceof User);
+console.log({} instanceof User);
+
+const john2: User = {
+    name: "John",
+    age: 16,
+};
+console.log(john2 instanceof User);
