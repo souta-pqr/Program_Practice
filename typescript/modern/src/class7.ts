@@ -1,14 +1,17 @@
-class User {
-    name: string = "";
-    age: number = 0;
+type HasName = {
+    name: string;
 }
 
-const uhyo = new User();
-console.log(uhyo instanceof User);
-console.log({} instanceof User);
+class User5 implements HasName {
+    name: string;
+    #age: number;
 
-const john2: User = {
-    name: "John",
-    age: 16,
-};
-console.log(john2 instanceof User);
+    constructor (name: string, age: number) {
+        this.name = name;
+        this.#age = age;
+    }
+
+    public isAdult(): boolean {
+        return this.#age >= 20;
+    }
+}

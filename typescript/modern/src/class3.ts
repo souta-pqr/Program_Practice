@@ -1,25 +1,13 @@
-class User2<T> {
-    name: string;
-    #age: number;
-    readonly data: T;
+class PremiumUser2 extends User {
+    rank: number;
 
-    constructor(name: string, age: number, data: T) {
-        this.name = name;
-        this.#age = age;
-        this.data = data;
-    }
-    
-    public isAdult(): boolean {
-        return this.#age >= 20;
+    constructor(name: string, age: number, rank: number) {
+        super(name, age);
+        this.rank = rank;
     }
 }
 
-const uhyo1 = new User2<string>("uhyo", 3, "example");
-const data = uhyo1.data;
-
-const john = new User2("John", 30, {hobby: "game"});
-const hobby = john.data.hobby;
-
-console.log(uhyo1.isAdult());
-console.log(john.isAdult());
-console.log(data);
+const uhyo3 = new PremiumUser2("uhyo", 30, 2);
+console.log(uhyo3.name);
+console.log(uhyo3.isAdult());
+console.log(uhyo3.rank);

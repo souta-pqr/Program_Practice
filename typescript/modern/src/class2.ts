@@ -1,20 +1,27 @@
 class User1 {
-    static adminUser: User1;
-    static {
-        this.adminUser = new User1();
-        this.adminUser.#age = 9999;
+    name: string;
+    #age: number;
+
+    constructor(name: string, age: number) {
+        this.name = name;
+        this.#age = age;
     }
 
-    #age: number = 0;
-    getAge() {
-        return this.#age;
-    }
-    setAge(age: number) {
-        if (age < 0 || age > 150) {
-            return;
-        }
-        this.#age = age;
+    public isAdult(): boolean {
+        return this.#age >= 20;
     }
 }
 
-console.log(User1.adminUser.getAge());
+class PremiumUser1 extends User1 {
+    rank: number = 1;
+
+    public isAdult(): boolean {
+        return true;
+    }
+}
+
+const john1 = new User1("John", 10);
+const uhyo2 = new PremiumUser1("uhyo", 10);
+
+console.log(john1.isAdult());
+console.log(uhyo2.isAdult());

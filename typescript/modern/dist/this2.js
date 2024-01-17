@@ -10,28 +10,26 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _User1_age;
-class User1 {
+var _User7_age;
+class User7 {
     constructor(name, age) {
-        _User1_age.set(this, void 0);
+        _User7_age.set(this, void 0);
         this.name = name;
-        __classPrivateFieldSet(this, _User1_age, age, "f");
+        __classPrivateFieldSet(this, _User7_age, age, "f");
     }
     isAdult() {
-        return __classPrivateFieldGet(this, _User1_age, "f") >= 20;
+        return __classPrivateFieldGet(this, _User7_age, "f") >= 20;
+    }
+    getAge() {
+        return __classPrivateFieldGet(this, _User7_age, "f");
+    }
+    fillterOlder(users) {
+        return users.filter(u => u.getAge() < __classPrivateFieldGet(this, _User7_age, "f"));
     }
 }
-_User1_age = new WeakMap();
-class PremiumUser1 extends User1 {
-    constructor() {
-        super(...arguments);
-        this.rank = 1;
-    }
-    isAdult() {
-        return true;
-    }
-}
-const john1 = new User1("John", 10);
-const uhyo2 = new PremiumUser1("uhyo", 10);
-console.log(john1.isAdult());
-console.log(uhyo2.isAdult());
+_User7_age = new WeakMap();
+const uhyo4 = new User7("uhyo", 30);
+const john4 = new User7("John", 10);
+const bob = new User7("Bob", 20);
+const older = uhyo4.fillterOlder([john4, bob]);
+console.log(older);

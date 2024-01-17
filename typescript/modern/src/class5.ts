@@ -1,13 +1,25 @@
-class User4<T> {
+class User3 {
     name: string;
-    #age: number;
-    readonly data: T;
+    protected age: number 
 
-    constructor(name: string, age: number, data: T) {
+    constructor(name: string, age: number) {
         this.name = name;
-        this.#age = age;
-        this.data = data;
+        this.age = age;
+    }
+
+    public isAdult(): boolean {
+        return this.age >= 20;
     }
 }
 
-const uhyo3 = new User4<string>("uhyo", 3, "example");
+class PremiumUser4 extends User3 {
+    public isAdult(): boolean {
+        return this.age >= 10;
+    }
+}
+
+const john2 = new PremiumUser4("John", 10);
+const nick = new User3("Nick", 10);
+
+console.log(john2.isAdult());
+console.log(nick.isAdult());

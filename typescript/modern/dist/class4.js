@@ -1,17 +1,33 @@
 "use strict";
-class User3 {
-    constructor() {
-        this.name = "";
-        this.age = 0;
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+};
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var _User2_age;
+class User2 {
+    constructor(name, age) {
+        _User2_age.set(this, void 0);
+        this.name = name;
+        __classPrivateFieldSet(this, _User2_age, age, "f");
     }
     isAdult() {
-        return this.age >= 20;
+        return __classPrivateFieldGet(this, _User2_age, "f") >= 20;
     }
 }
-const uhyo2 = new User3();
-const john1 = {
-    name: "John",
-    age: 15,
-    isAdult: () => true
-};
-console.log(john1.isAdult());
+_User2_age = new WeakMap();
+class PremiumUser3 extends User2 {
+    constructor() {
+        super(...arguments);
+        this.rank = 1;
+    }
+    isAdult() {
+        return true;
+    }
+}
