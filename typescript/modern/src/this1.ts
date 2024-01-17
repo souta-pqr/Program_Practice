@@ -1,11 +1,19 @@
-const user6 = {
-    name: "uhyo",
-    age: 25,
-    isAdult() {
-        return this.age >= 20;
-    }
-}
+// class User1 {
+//     name: string;
+//     #age: number;
 
-console.log(user6.isAdult());
-user6.age = 10;
-console.log(user6.isAdult());
+//     constructor(name: string, age: number) {
+//         this.name = name;
+//         this.#age = age;
+//     }
+
+//     public isAdult(): boolean {
+//         return this.#age >= 20;
+//     }
+// }
+
+// const uhyo = new User1('uhyo', 25);
+// const john = new User1("john", 17);
+
+// console.log.(uhyo.isAdult()); // true
+// console.log(uhyo.isAdult.apply(john, [])); // false (thisがjohnになる)

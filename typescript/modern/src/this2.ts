@@ -1,4 +1,4 @@
-class User7 {
+class User2 {
     name: string;
     #age: number;
 
@@ -10,19 +10,12 @@ class User7 {
     public isAdult(): boolean {
         return this.#age >= 20;
     }
-
-    public getAge(): number {
-        return this.#age;
-    }
-
-    public fillterOlder(users: readonly User7[]): User7[] {
-        return users.filter(u => u.getAge() > this.#age);
-    }
 }
 
-const uhyo4 = new User7("uhyo", 30);
-const john4 = new User7("John", 10);
-const bob = new User7("Bob", 20);
+const uhyo1 = new User2('uhyo', 25);
+const john1 = new User2("john", 17);
 
-const older = uhyo4.fillterOlder([john4, bob]);
-console.log(older);
+const boundIsAdult = uhyo1.isAdult.bind(uhyo1);
+
+console.log(boundIsAdult()); // true
+console.log(boundIsAdult.call(john1));
