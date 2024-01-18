@@ -1,10 +1,8 @@
 "use strict";
-const uhyo1 = {
+const uhyo = {
     name: "uhyo",
-    age: 26
+    age: 25,
 };
 const john = {
-    name: "john"
+    name: "john",
 };
-console.log(uhyo1);
-console.log(john);

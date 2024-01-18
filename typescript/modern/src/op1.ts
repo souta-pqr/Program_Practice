@@ -1,15 +1,13 @@
-type Human1 = {
+type Human = {
     name: string;
     age?: number;
 }
 
-const uhyo1: Human1 = {
+const uhyo: Human = {
     name: "uhyo",
-    age: 26
-};
-const john: Human1 = {
-    name: "john"
+    age: 25,
 };
 
-console.log(uhyo1);
-console.log(john);
+const john: Human = {
+    name: "john",
+};
