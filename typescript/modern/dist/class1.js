@@ -10,20 +10,23 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _User2_age;
-class User2 {
+var _User_name, _User_age;
+class EmptyNameError extends Error {
+}
+class User {
     constructor(name, age) {
-        _User2_age.set(this, void 0);
-        this.name = name;
-        __classPrivateFieldSet(this, _User2_age, age, "f");
+        _User_name.set(this, void 0);
+        _User_age.set(this, void 0);
+        if (name === "") {
+            throw new EmptyNameError("名前が空です．");
+        }
+        __classPrivateFieldSet(this, _User_name, name, "f");
+        __classPrivateFieldSet(this, _User_age, age, "f");
     }
-    isAdult() {
-        return __classPrivateFieldGet(this, _User2_age, "f") >= 20;
+    getMessage(str) {
+        return `${__classPrivateFieldGet(this, _User_name, "f")} (${__classPrivateFieldGet(this, _User_age, "f")})「${str}」`;
     }
 }
-_User2_age = new WeakMap();
-const uhyo1 = new User2('uhyo', 25);
-const john1 = new User2("john", 17);
-const boundIsAdult = uhyo1.isAdult.bind(uhyo1);
-console.log(boundIsAdult()); // true
-console.log(boundIsAdult.call(john1));
+_User_name = new WeakMap(), _User_age = new WeakMap();
+const user = new User("Uhyo", 26);
+console.log(user.getMessage("こんにちは"));
