@@ -1,16 +1,16 @@
-type HasToString1 = {
-    toString: () => string
+type Human = {
+    type: "Human";
+    name: string;
+    age: number;
 }
 
-function useToString2(value: HasToString & object) {
-    console.log(`value is ${value.toString()}`);
+function isPropertyAccessible(value: unknown): value is { [key: string]: unknown } {
+    return value != null;
 }
 
-useToString2({
-    toString() {
-        return "Hello World";
-    }
-})
-
-console.log("Hello World".toString());
-// useToString2(3.14); // Error: Argument of type 'number' is not assignable to parameter of type 'HasToString & object'. Type 'number' is not assignable to type 'HasToString'.
+function isHuman(value: unknown): value is Human {
+    if (!isPropertyAccessible(value)) return false;
+    return value.type === "Human" &&
+        typeof value.name === "string" &&
+        typeof value.age === "number";
+}
