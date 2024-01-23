@@ -1,5 +1,5 @@
 let value = 0;
 
-export function increment() {
+export default function increment() {
     return ++value;
 }

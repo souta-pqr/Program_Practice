@@ -1,5 +1,4 @@
-import { increment } from "./counter.js";
+import * as uhyo from "./uhyo1.js";
 
-console.log(`カウンタの値は${increment()}です`)
-console.log(`カウンタの値は${increment()}です`)
-console.log(`カウンタの値は${increment()}です`)
+console.log(uhyo.name);
+console.log(uhyo.age);

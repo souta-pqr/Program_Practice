@@ -1,3 +1,3 @@
-import { getUhyoName } from "./uhyo1";
+import { Animal, tama2 } from './animal.js';
 
-console.log(getUhyoName());
+const myCat: Animal = { ...tama2 };

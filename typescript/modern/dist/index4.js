@@ -1,2 +1,4 @@
-import "./foo.js";
-import "./bar.js";
+export const uhyo = {
+    name: 'uhyo',
+    age: 26
+};

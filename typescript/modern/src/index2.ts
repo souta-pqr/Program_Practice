@@ -1,3 +1,4 @@
-import { getUhyoName1 } from "./uhyo2"
+import * as uhyo from './uhyo.js';
 
-console.log(getUhyoName1()) // uhyo1
+console.log('uhyo.name:', uhyo.name);
+console.log('uhyo.age:', uhyo.age);

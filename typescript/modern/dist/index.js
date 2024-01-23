@@ -1,2 +1,4 @@
-import { uhyoname, age as Uhyoage } from "./uhyo.js";
-console.log(`uhyoの名前は${uhyoname}で年齢は${Uhyoage}です`);
+import increment from './counter.js';
+console.log(`カウンタの値は${increment()}です`);
+console.log(`カウンタの値は${increment()}です`);
+console.log(`カウンタの値は${increment()}です`);
