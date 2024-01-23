@@ -1,10 +1,13 @@
 import { readFile } from "fs/promises";
 
-const p = readFile("foo4.txt", "utf8");
+const pFoo = readFile("foo.txt", "utf8");
+const pBar = readFile("bar.txt", "utf8");
+const pBaz = readFile("baz.txt", "utf8");
 
-p.then((result) => {
-    console.log("成功", result);
+const p = Promise.all([pFoo, pBar, pBaz]);
+
+p.then((results) => {
+    console.log("foo.txt:", results[0]);
+    console.log("bar.txt:", results[1]);
+    console.log("baz.txt:", results[2]);
 });
-p.catch((error) => {
-    console.log("失敗", error);
-})
