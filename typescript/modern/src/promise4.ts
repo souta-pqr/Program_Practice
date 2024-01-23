@@ -1,14 +1,16 @@
+import { read } from "fs";
 import { readFile } from "fs/promises";
 
-const p2 = Promise.all([
-    readFile("foo.txt", "utf8"),
-    readFile("bar.txt", "utf8"),
-    readFile("baz.txt", "utf8")
-]);
+const repeat10 = (str: string) =>
+    new Promise<string>((resolve) => {
+        setTimeout(
+            () => resolve(str.repeat(10)),
+            1000
+        );
+    });
 
-p2.then((results) => {
-    const [foo, bar, baz] = results;
-    console.log("foo.txt:", foo);
-    console.log("bar.txt:", bar);
-    console.log("baz.txt:", baz);
-})
+readFile("foo.txt", "utf8")
+    .then(repeat10)
+    .then((result) => {
+        console.log(result);
+    });

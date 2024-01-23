@@ -4,10 +4,10 @@ const sleepReject = (duration) => {
         setTimeout(reject, duration);
     });
 };
-const p = Promise.allSettled([
-    readFile("foo.txt", "utf8"),
-    sleepReject(5000)
-]);
-p.then((result) => {
+const p = readFile("foo.txt", "utf8")
+    .then(() => sleepReject(1000))
+    .then((result) => {
     console.log(result);
+}, () => {
+    console.log("rejected");
 });

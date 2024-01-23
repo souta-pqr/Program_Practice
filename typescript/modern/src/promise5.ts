@@ -1,11 +1,9 @@
-import { readFile  } from "fs/promises";
+import { readFile } from "fs/promises";
 
-const p3 = Promise.race([
-    readFile("foo.txt", "utf8"),
-    readFile("bar.txt", "utf8"),
-    readFile("baz.txt", "utf8")
-]);
-
-p3.then((result) => {
+const p1 = readFile("foo.txt", "utf8");
+const p2 = p1.then((result) => {
+    throw new Error("Something went wrong");
+})
+p2.then((result) => {
     console.log(result);
 });

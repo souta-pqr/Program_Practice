@@ -1,5 +1,9 @@
-const p = Promise.resolve(100);
+import { readFile } from "fs/promises";
 
-p.then((res) => {
-    console.log(res);
-});
+const p = readFile("foo.txt", "utf8");
+
+const p2 = p.then((result) => result + result);
+
+p2.then((result) => {
+    console.log(result);
+})
