@@ -1,11 +1,11 @@
 // index.tsx
 import React from 'react';
 import ReactDOM from 'react-dom';
-import TrainInfo from './components/TrainInfo';
+import TrainTimeTable from './TrainTimeTable';
 
 ReactDOM.render(
   <React.StrictMode>
-    <TrainInfo />
+    <TrainTimeTable />
   </React.StrictMode>,
   document.getElementById('root')
 );
