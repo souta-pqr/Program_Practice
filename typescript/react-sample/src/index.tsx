@@ -3,7 +3,9 @@ import { createRoot } from 'react-dom/client';
 // import Hello from './components/Hello';
 // import Name from './components/Name';
 // import Message from './components/Message';
-import Parent from './components/ContainerSample';
+// import Parent from './components/ContainerSample';
+// import Page from './components/ContextSample';
+import Counter from './components/counter';
 
 const root = document.getElementById('root');
 if (root !== null) {
@@ -12,7 +14,9 @@ if (root !== null) {
       {/* <Hello /> */}
       {/* <Name /> */}
       {/* <Message /> */}
-      <Parent />
+      {/* <Parent /> */}
+      {/* <Page /> */}
+      <Counter initialValue={0} />
     </React.StrictMode>
   );
 }
