@@ -1,25 +1,40 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
 
-type CounterProps = {
-    initialValue: number
+type Action = "DECREMNET" | "DOUBLE" | "RESET" | "INCREMENT";
+
+const reducer = (currentCount: number, action: Action) => {
+    switch (action) {
+        case "DECREMNET":
+            return currentCount - 1;
+        case "INCREMENT":
+            return currentCount + 1;
+        case "DOUBLE":
+            return currentCount * 2;
+        case "RESET":
+            return 0;
+        default:
+            return currentCount;
+    }
 }
 
-// このコンポーネントを使用する際は，以下のように，
-// propsのinitialValueに初期値をセットしてください．
-// < Counter initialValue={0} />
+type CounterProps = {
+    initialValue: number;
+}
+
 const Counter = (props: CounterProps) => {
-    // カウントを保持する一つの状態をuseState()で宣言します．引数には初期値を指定します．
-    // countが現在の状態，setCountが状態を更新する関数です．
-    const [count, setCount] = useState(props.initialValue);
+    const { initialValue } = props
+    const [count, dispatch] = useReducer(reducer, initialValue)
 
     return (
         <div>
             <p>Count: {count}</p>
-            {/* ボタンを押した時に，countの状態を更新します． */}
-            <button onClick={() => setCount(count - 1)}>-</button>
-            <button onClick={() => setCount((prevCount) => prevCount + 1)}>+</button>
+            {/* dispatch関数にactionを渡して，状態を更新します． */}
+            <button onClick={() => dispatch("DECREMNET")}>-</button>
+            <button onClick={() => dispatch("DOUBLE")}>x2</button>
+            <button onClick={() => dispatch("RESET")}>Reset</button>
+            <button onClick={() => dispatch("INCREMENT")}>+</button>
         </div>
-    )   
+    )
 }
 
 export default Counter;

@@ -5,7 +5,8 @@ import { createRoot } from 'react-dom/client';
 // import Message from './components/Message';
 // import Parent from './components/ContainerSample';
 // import Page from './components/ContextSample';
-import Counter from './components/counter';
+// import Counter from './components/counter';
+import { Parent } from './components/Parent';
 
 const root = document.getElementById('root');
 if (root !== null) {
@@ -16,7 +17,8 @@ if (root !== null) {
       {/* <Message /> */}
       {/* <Parent /> */}
       {/* <Page /> */}
-      <Counter initialValue={0} />
+      {/* <Counter initialValue={0} /> */}
+      <Parent />
     </React.StrictMode>
   );
 }
