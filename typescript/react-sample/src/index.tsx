@@ -6,7 +6,9 @@ import { createRoot } from 'react-dom/client';
 // import Parent from './components/ContainerSample';
 // import Page from './components/ContextSample';
 // import Counter from './components/counter';
-import { Parent } from './components/Parent';
+// import { Parent } from './components/Parent';
+// import Parent from './components/callback';
+import { UseMemoSample } from './components/UseMemoSample';
 
 const root = document.getElementById('root');
 if (root !== null) {
@@ -18,7 +20,8 @@ if (root !== null) {
       {/* <Parent /> */}
       {/* <Page /> */}
       {/* <Counter initialValue={0} /> */}
-      <Parent />
+      {/* <Parent /> */}
+      <UseMemoSample />
     </React.StrictMode>
   );
 }
