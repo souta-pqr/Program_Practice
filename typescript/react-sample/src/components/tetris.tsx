@@ -54,8 +54,8 @@ const Board = () => {
   const [score, setScore] = useState(0);
   const [isMovingDown, setIsMovingDown] = useState(false);
 
-  // テトリミノを下に移動させる
-  useEffect(() => {
+// テトリミノを下に移動させる
+useEffect(() => {
     const interval = setInterval(() => {
       if (!isMovingDown) {
         setTetromino(prev => {
@@ -83,10 +83,32 @@ const Board = () => {
             setBoard(newBoard);
             // 新しいテトリミノを生成
             const newTetromino = createTetromino();
+            // 新しいテトリミノが初期位置に配置できるかどうかをチェック
+            if (checkCollision(newBoard, newTetromino)) {
+              clearInterval(interval);
+              alert('GAME OVER');
+              setBoard(createBoard()); // ボードをリセット
+              setScore(0); // スコアをリセット
+              return prev;
+            }
             setTetromino(nextTetromino);
             setNextTetromino(newTetromino);
             // スコアを更新
-            setScore(prev => prev + completedLines * 100);
+            setScore(prev => {
+              const newScore = prev + completedLines * 100;
+              if (newScore >= 1000) {
+                clearInterval(interval);
+                const continueGame = window.confirm('GAME CLEAR! Would you like to continue?');
+                if (continueGame) {
+                  return newScore;
+                } else {
+                  setBoard(createBoard()); // ボードをリセット
+                  setTetromino(createTetromino()); // テトリミノをリセット
+                  return 0; // スコアをリセット
+                }
+              }
+              return newScore;
+            });
             return prev;
           }
           // テトリミノを下に移動
@@ -95,7 +117,7 @@ const Board = () => {
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [board, nextTetromino, isMovingDown]);
+  }, [board, nextTetromino, isMovingDown]);    
 
   // キーボードの矢印キーによるテトリミノの操作を処理する
   useEffect(() => {
@@ -168,7 +190,7 @@ const boardWithTetromino = board.map((row, y) => row.map((cell, x) => {
           <div>
             {boardWithTetromino.map((row, y) => (
               <div key={y} style={{ display: 'flex' }}>
-                {row.map((cell, x) => <div key={x} style={{ width: '20px', height: '20px', border: '1px solid black', textAlign: 'center' }}>{cell}</div>)}
+                {row.map((cell, x) => <div key={x} style={{ width: '20px', height: '20px', border: '1px solid black', textAlign: 'center', backgroundColor: cell === 1 ? 'blue' : 'white' }}>{cell}</div>)}
               </div>
             ))}
           </div>
@@ -176,14 +198,14 @@ const boardWithTetromino = board.map((row, y) => row.map((cell, x) => {
             <div>NEXT</div>
             {nextTetromino.shape.map((row, y) => (
               <div key={y} style={{ display: 'flex' }}>
-                {row.map((cell, x) => <div key={x} style={{ width: '20px', height: '20px', border: '1px solid black', textAlign: 'center' }}>{cell}</div>)}
+                {row.map((cell, x) => <div key={x} style={{ width: '20px', height: '20px', border: '1px solid black', textAlign: 'center', backgroundColor: cell === 1 ? 'blue' : 'white' }}>{cell}</div>)}
               </div>
             ))}
           </div>
         </div>
       </div>
     </div>
-  );    
+  );      
 }
 
 export default Board;
