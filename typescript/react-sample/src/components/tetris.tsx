@@ -117,6 +117,7 @@ const Board = () => {
           return prev;
         });
       } else if (event.key === 'ArrowDown') {
+        event.preventDefault();
         setIsMovingDown(true);
         setTetromino(prev => {
           const next = { ...prev, y: prev.y + 1 };
@@ -126,6 +127,7 @@ const Board = () => {
           return prev;
         });
       } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
         setTetromino(prev => {
           const next = { ...prev, shape: prev.shape[0].map((val, i) => prev.shape.map(row => row[i])).reverse() };
           if (!checkCollision(board, next)) {
@@ -148,8 +150,8 @@ const Board = () => {
     };
   }, [board]);
 
-  // テトリミノを盤面に描画する
-  const boardWithTetromino = board.map((row, y) => row.map((cell, x) => {
+// テトリミノを盤面に描画する
+const boardWithTetromino = board.map((row, y) => row.map((cell, x) => {
     if (tetromino.y <= y && y < tetromino.y + tetromino.shape.length &&
         tetromino.x <= x && x < tetromino.x + tetromino.shape[0].length &&
         tetromino.shape[y - tetromino.y][x - tetromino.x] === 1) {
@@ -157,29 +159,31 @@ const Board = () => {
     }
     return cell;
   }));
-
+  
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div>
-          {boardWithTetromino.map((row, y) => (
-            <div key={y} style={{ display: 'flex' }}>
-              {row.map((cell, x) => <div key={x} style={{ width: '20px', height: '20px', border: '1px solid black', textAlign: 'center' }}>{cell}</div>)}
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop: '20px' }}>SCORE: {score}</div>
-        <div style={{ marginTop: '20px' }}>
-          <div>NEXT</div>
-          {nextTetromino.shape.map((row, y) => (
-            <div key={y} style={{ display: 'flex' }}>
-              {row.map((cell, x) => <div key={x} style={{ width: '20px', height: '20px', border: '1px solid black', textAlign: 'center' }}>{cell}</div>)}
-            </div>
-          ))}
+        <div style={{ marginBottom: '20px' }}>SCORE: {score}</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '220px' }}>
+          <div>
+            {boardWithTetromino.map((row, y) => (
+              <div key={y} style={{ display: 'flex' }}>
+                {row.map((cell, x) => <div key={x} style={{ width: '20px', height: '20px', border: '1px solid black', textAlign: 'center' }}>{cell}</div>)}
+              </div>
+            ))}
+          </div>
+          <div style={{ marginLeft: '20px' }}>
+            <div>NEXT</div>
+            {nextTetromino.shape.map((row, y) => (
+              <div key={y} style={{ display: 'flex' }}>
+                {row.map((cell, x) => <div key={x} style={{ width: '20px', height: '20px', border: '1px solid black', textAlign: 'center' }}>{cell}</div>)}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
-  );
-};
+  );    
+}
 
 export default Board;
