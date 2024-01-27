@@ -13,7 +13,8 @@ import { createRoot } from 'react-dom/client';
 // import Parent from './components/useContext';
 // import ImageUploader from './components/useRef'
 // import Parent from "./components/showMessage";
-import { Input } from "./components/custom";
+// import { Input } from "./components/custom";
+import Board from "./components/tetris";
 
 const root = document.getElementById('root');
 if (root !== null) {
@@ -30,7 +31,8 @@ if (root !== null) {
       {/* <Clock /> */}
       {/* <ImageUploader /> */}
       {/* <Parent /> */}
-      <Input />
+      {/* <Input /> */}
+      <Board />
     </React.StrictMode>
   );
 }
