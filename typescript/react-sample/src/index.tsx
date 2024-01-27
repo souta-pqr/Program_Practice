@@ -8,7 +8,12 @@ import { createRoot } from 'react-dom/client';
 // import Counter from './components/counter';
 // import { Parent } from './components/Parent';
 // import Parent from './components/callback';
-import { UseMemoSample } from './components/UseMemoSample';
+// import { UseMemoSample } from './components/UseMemoSample';
+// import Clock from './components/Clock';
+// import Parent from './components/useContext';
+// import ImageUploader from './components/useRef'
+// import Parent from "./components/showMessage";
+import { Input } from "./components/custom";
 
 const root = document.getElementById('root');
 if (root !== null) {
@@ -21,7 +26,11 @@ if (root !== null) {
       {/* <Page /> */}
       {/* <Counter initialValue={0} /> */}
       {/* <Parent /> */}
-      <UseMemoSample />
+      {/* <UseMemoSample /> */}
+      {/* <Clock /> */}
+      {/* <ImageUploader /> */}
+      {/* <Parent /> */}
+      <Input />
     </React.StrictMode>
   );
 }
