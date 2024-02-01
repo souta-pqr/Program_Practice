@@ -42,3 +42,5 @@ export const getStaticProps: GetStaticProps<ISRProps> = async (context) => {
         revalidate: 60,
     }
 }
+
+export default ISR
