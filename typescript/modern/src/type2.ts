@@ -1,40 +1,23 @@
-type FooBar = {
-    foo: string;
-    bar: number;
-}
-type FooBarBaz = {
-    foo: string;
-    bar: number;
-    baz: boolean;
+type Family<Parent, Child> = {
+    mother: Parent;
+    father: Parent;
+    child: Child;
 }
 
-const obj6: FooBarBaz = {
-    foo: "hi",
-    bar: 1,
-    baz: false,
-}
+const obj1: Family<number, string> = {
+    mother: 1,
+    father: 2,
+    child: "3"
+};
 
-const obj7: FooBar = obj6;
-
-type Animal = {
-    age: number;
-}
-
-type Human = {
-    age: number;
+type HasName = {
     name: string;
 }
 
-type AnimalFamily = {
-    familyName: string;
-    mother: Animal;
-    father: Animal;
-    child: Animal;
+type Family2<Parent extends HasName, Child extends HasName> = {
+    mother: Parent;
+    father: Parent;
+    child: Child;
 }
 
-type HumanFamily = {
-    familyname: string;
-    mother: Human;
-    father: Human;
-    child: Human;
-}
+// type T = Family2<number, string>; // Error: Type 'number' does not satisfy the constraint 'HasName'. 
