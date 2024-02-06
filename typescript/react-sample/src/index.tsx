@@ -1,8 +1,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-// import PokemonInfo from './components/poke'; // ファイルパスはあなたのプロジェクトによります
-// import PokemonList from './components/poke_list'; // ファイルパスはあなたのプロジェクトによります
-import PokemonQuiz from './components/poke_quiz'; // ファイルパスはあなたのプロジェクトによります
+// import PokemonInfo from './components/poke';
+// import PokemonList from './components/poke_list';
+import PokemonQuiz from './components/poke_quiz';
 
 const root = document.getElementById('root');
 if (root !== null) {
