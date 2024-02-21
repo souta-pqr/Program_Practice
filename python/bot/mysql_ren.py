@@ -1,22 +1,12 @@
-import openai
 import mysql.connector
-
-openai.api_key = ''
-
-def get_response(previous_messages):
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=previous_messages
-    )
-    return response['choices'][0]['message']['content']
 
 def save_conversation_to_db(user_id, conversation):
     # MySQLデータベースに接続
     db = mysql.connector.connect(
         host="localhost",
-        user="your_username",
-        password="your_password",
-        database="your_database"
+        user="root",
+        password="souta0116",
+        database="reserveInfo"  # データベース名を修正
     )
     cursor = db.cursor()
     # 会話をデータベースに保存
@@ -31,21 +21,15 @@ def personality_test_bot():
     print("性格診断チャットボットへようこそ、" + user_name + "さん！")
     questions = [
         "あなたは新しい環境にすぐに適応できますか？",
-        "あなたは計画を立てることが好きですか、それとも spontaneity を好みますか？",
+        "あなたは計画を立てることが好きですか、それとも突発的に物事を行うことを好みますか？",
         "あなたは他人と協力して仕事をすることを好みますか、それとも一人で仕事をすることを好みますか？",
         "あなたは新しいアイデアを試すことを好みますか、それとも既知の方法を好みますか？",
-    ]
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
     ]
     conversation = []
     for question in questions:
         print(question)
         user_message = input("> ")
-        messages.append({"role": "user", "content": user_message})
-        response = get_response(messages)
-        print("Bot: ", response)
-        conversation.append({"question": question, "answer": user_message, "bot_response": response})
+        conversation.append({"question": question, "answer": user_message})
     # 会話をデータベースに保存
     save_conversation_to_db(user_id, str(conversation))
 
