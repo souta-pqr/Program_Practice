@@ -1,13 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import Hello from "./components/Hello";
+// import Hello from "./components/Hello";
 // import App from './App';
-import Name from "./components/Name";
-import Message from "./components/Message";
+// import Name from "./components/Name";
+// import Message from "./components/Message";
 import reportWebVitals from './reportWebVitals';
 // import Parent from './components/ContainerSample';
-import { Parent } from './components/Parent';
+// import { Parent } from './components/Parent';
+// import UseMemoSample from './components/UseMemoSample';
+// import  { Clock } from './components/Clock';
+import Parent from "./components/Context";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -16,9 +19,12 @@ root.render(
   // <h1>見出し</h1>
   <React.StrictMode>
     {/* <App /> */}
-    <Hello />
+    {/* <Hello />
     <Name />
     <Message />
+    <Parent />
+    <UseMemoSample /> */}
+    {/* <Clock /> */}
     <Parent />
   </React.StrictMode>
 );
