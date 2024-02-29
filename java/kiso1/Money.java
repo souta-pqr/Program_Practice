@@ -1,41 +1,27 @@
 impoort java.util.Currency;
 
 class Money {
-  private int amount;
-  private Currency currency;
+  final int amount;
+  final Currency currency;
 
-  public Money(int amount, Currency currency) {
+  Money(int amount, Currency currency) {
+    if (amount < 0) {
+      throw new IllegalArgumentException("金額は0以上でなければなりません")
+    }
+    if (currency == null) {
+      throw new IllegalArgumentException("通貨単位はnullであってはなりません")
+    }
+ 
     this.amount = amount;
     this.currency = currency;
   }
 
-  public int getAmount() {
-    return amount;
-  }
-
-  public Currency getCurrency() {
-    return currency;
-  }
-
-  public Money add(Money m) {
-    if (!currency.equals(m.getCurrency())) {
-      throw new IllegalArgumentException("Currency mismatch");
+  Money add(final Money other) {
+    if (!currency.equals(other.currency)) {
+      throw new IllegalArgumentException("通貨単位が異なります")
     }
-    return new Money(amount + m.getAmount(), currency);
-  }
 
-  public Money subtract(Money m) {
-    if (!currency.equals(m.getCurrency())) {
-      throw new IllegalArgumentException("Currency mismatch");
-    }
-    return new Money(amount - m.getAmount(), currency);
-  }
-
-  public boolean equals(Object anObject) {
-    if (anObject instanceof Money) {
-      Money aMoney = (Money) anObject;
-      return aMoney.getCurrency().equals(currency) && aMoney.getAmount() == amount;
-    }
-    return false;
+    final int added = amount + other.amount;
+    return new Monwy(added, currency);
   }
 }
