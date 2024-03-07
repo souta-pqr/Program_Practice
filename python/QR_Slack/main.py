@@ -1,42 +1,35 @@
-import qrcode
-import pandas as pd
-from slack_sdk.webhook import WebhookClient
-from slack_sdk.errors import SlackApiError
+import cv2
+from pyzbar.pyzbar import decode
+import requests
 
-# QRコードを作成する関数
-def create_qr(data, filename):
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=10,
-        border=4,
-    )
-    qr.add_data(data)
-    qr.make(fit=True)
+# SlackのWebhook URL
+webhook_url = ''
 
-    img = qr.make_image(fill='black', back_color='white')
-    img.save(filename)
+# Webカメラの設定
+cap = cv2.VideoCapture(0)
 
-# QRコードを登録する関数
-def register_qr(data, filename, df):
-    create_qr(data, filename)
-    df = df.append({'name': data, 'filename': filename}, ignore_index=True)
-    df.to_csv('qr_codes.csv', index=False)
+while True:
+    # Webカメラから画像を取得
+    ret, frame = cap.read()
 
-# Slackに通知する関数
-def notify_slack(name):
-    url = ''
-    client = WebhookClient(url)
-    try:
-        response = client.send(text=f'{name}さんに通知されました．')
-    except SlackApiError as e:
-        assert e.response["error"]
+    # QRコードの読み取り
+    decoded_objects = decode(frame)
 
-# QRコードのデータフレームを作成
-df = pd.DataFrame(columns=['name', 'filename'])
+    # QRコードが読み取れた場合
+    if decoded_objects:
+        # QRコードのデータが一致するか確認
+        if decoded_objects[0].data.decode() == "小堀":
+            # Slackに通知を送る
+            requests.post(webhook_url, json={'text': '小堀さん認証されました！'})
+            break
 
-# QRコードを作成して登録
-register_qr('〇〇さん', 'qrcode.png', df)
+    # 画像を表示
+    cv2.imshow('frame', frame)
 
-# Slackに通知
-notify_slack('〇〇さん')
+    # 'q'キーが押されたらループを抜ける
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+# キャプチャをリリースしてウィンドウを閉じる
+cap.release()
+cv2.destroyAllWindows()
