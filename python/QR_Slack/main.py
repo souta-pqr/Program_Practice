@@ -18,10 +18,10 @@ while True:
     # QRコードが読み取れた場合
     if decoded_objects:
         # QRコードのデータが一致するか確認
-        if decoded_objects[0].data.decode() == "小堀":
+        name = decoded_objects[0].data.decode()
+        if name in ["小堀", "花川", "保科"]:
             # Slackに通知を送る
-            requests.post(webhook_url, json={'text': '小堀さん認証されました！'})
-            break
+            requests.post(webhook_url, json={'text': f'{name}さん認証されました！'})
 
     # 画像を表示
     cv2.imshow('frame', frame)
