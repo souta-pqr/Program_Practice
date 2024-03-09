@@ -4,10 +4,12 @@ import requests
 import time
 
 # SlackのWebhook URL
-webhook_url = ''
+webhook_url = 'https://hooks.slack.com/services/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'
 
 # Webカメラの設定
 cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)  # カメラの解像度を上げる
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)  # カメラの解像度を上げる
 
 # QRコードに埋め込む情報
 names = ["小堀", "花川", "保科", "伊藤", "遠藤", "久馬", "関取", "若海", "森", "櫻井", "三谷", "大賀", "藤江"]
