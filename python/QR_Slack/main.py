@@ -27,15 +27,19 @@ while True:
     # QRコードが読み取れた場合
     if decoded_objects:
         # QRコードのデータが一致するか確認
-        index = int(decoded_objects[0].data.decode()) - 1
-        if 0 <= index < len(names):
-            name = names[index]
-            # 最後に認証されてから1分以上経過しているか確認
-            if time.time() - last_auth[name] > 60:
-                # Slackに通知を送る
-                requests.post(webhook_url, json={'text': f'{name}が認証されました！'})
-                # 最後に認証された時間を更新
-                last_auth[name] = time.time()
+        data = decoded_objects[0].data.decode()
+        if data.isdigit():
+            index = int(data) - 1
+            if 0 <= index < len(names):
+                name = names[index]
+                # 最後に認証されてから1分以上経過しているか確認
+                if time.time() - last_auth[name] > 60:
+                    # Slackに通知を送る
+                    requests.post(webhook_url, json={'text': f'{name}が認証されました！'})
+                    # 最後に認証された時間を更新
+                    last_auth[name] = time.time()
+
+
 
     # 画像を表示
     cv2.imshow('frame', frame)

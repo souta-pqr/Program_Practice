@@ -11,7 +11,7 @@ for i, name in enumerate(names):
         box_size=10,
         border=4,
     )
-    qr.add_data(i+1)  # 数字を埋め込む
+    qr.add_data(str(i+1))  # 数字を文字列として埋め込む
     qr.make(fit=True)
 
     # QRコードの描画と保存
