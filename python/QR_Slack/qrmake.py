@@ -8,7 +8,7 @@ names = ["小堀", "花川", "保科", "伊藤", "遠藤", "久馬", "関取", "
 for name in names:
     # QRコードの生成
     qr = qrcode.QRCode(
-        version=1,
+        version=2,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=10,
         border=4,
