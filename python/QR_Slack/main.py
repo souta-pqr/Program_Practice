@@ -4,7 +4,7 @@ import requests
 import time
 
 # SlackのWebhook URL
-webhook_url = 'https://hooks.slack.com/services/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'
+webhook_url = ''
 
 # Webカメラの設定
 cap = cv2.VideoCapture(0)
