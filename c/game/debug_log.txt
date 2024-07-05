@@ -1,0 +1,12 @@
+DEBUG: Debug file opened successfully
+DEBUG: Checking for WSL environment
+DEBUG: Running in WSL environment
+DEBUG: Checking DISPLAY environment variable
+DEBUG: DISPLAY environment variable is set to: 10.255.255.254:0
+DEBUG: Checking SDL_VIDEODRIVER environment variable
+DEBUG: SDL_VIDEODRIVER is set to: x11
+DEBUG: Checking X11 connection
+DEBUG: Attempting to open X11 display
+DEBUG: Closing game
+DEBUG: Quitting SDL
+DEBUG: Closing debug file
