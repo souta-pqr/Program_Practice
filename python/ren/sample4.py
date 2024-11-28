@@ -10,3 +10,20 @@ print(5/2)
 print(5//2)
 print('It\'s')
 print("\"my name is\"")
+# raw_str1 = 'C:\Users\deepinsider\Documents\work\data.txt'
+raw_str = r'C:\Users\deepinsider\Documents\work\data.txt'
+print(raw_str)
+# print(raw_str1)
+
+x = 1
+y = 100
+result = f'{x} + {y} = {x + y}'
+print(result)
+
+x = 2
+s = f'x = {x}'
+print(s)
+
+x = 3
+s = f'{x = }'
+print(s)
