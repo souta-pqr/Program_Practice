@@ -1,0 +1,4 @@
+2025-02-14 19:34:49,349 - __main__ - INFO - info message
+2025-02-14 19:34:49,350 - __main__ - WARNING - warning message
+2025-02-14 19:34:49,350 - __main__ - ERROR - error message
+2025-02-14 19:34:49,350 - __main__ - CRITICAL - critical message
