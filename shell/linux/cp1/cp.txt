@@ -1,0 +1,2 @@
+cp file1 file2 file3 aaa
+- aaaディレクトリに，file1, 2, 3をコピーする

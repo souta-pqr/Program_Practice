@@ -1,0 +1,2 @@
+mv file1 file2 file3 aaa
+- aaaのディレクトリにfile1, 2, 3を移動する
