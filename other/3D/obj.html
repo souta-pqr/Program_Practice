@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS - Mysterious 3D Portal</title>
+    <title>██████ - The Watchers Protocol</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
         
         * {
             margin: 0;
@@ -15,11 +15,12 @@
         }
 
         body {
-            font-family: 'Orbitron', monospace;
+            font-family: 'Share Tech Mono', monospace;
             background: #000;
             overflow: hidden;
-            color: #00ff88;
-            cursor: crosshair;
+            color: #00ff41;
+            cursor: none;
+            user-select: none;
         }
 
         #container {
@@ -31,14 +32,61 @@
         #canvas-container {
             width: 100%;
             height: 100%;
+            filter: contrast(1.2) brightness(1.1);
         }
 
-        /* ヘッダー */
+        /* カスタムカーソル */
+        .cursor {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00ff41;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transition: all 0.1s ease;
+            box-shadow: 0 0 20px #00ff41;
+        }
+
+        .cursor::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 4px;
+            background: #00ff41;
+            border-radius: 50%;
+        }
+
+        /* 秘密のグリッド */
+        .matrix-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            z-index: 1;
+            background-image: 
+                linear-gradient(rgba(0,255,65,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,255,65,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: matrix-scroll 20s linear infinite;
+        }
+
+        @keyframes matrix-scroll {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* ヘッダー - 暗号化風 */
         .header {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
+            top: 15px;
+            left: 15px;
+            right: 15px;
             z-index: 100;
             display: flex;
             justify-content: space-between;
@@ -46,269 +94,303 @@
         }
 
         .title {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 900;
-            background: linear-gradient(45deg, #00ff88, #0088ff, #ff0088);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: rainbow 3s ease-in-out infinite;
-            text-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+            font-family: 'Orbitron', monospace;
+            color: #00ff41;
+            text-shadow: 0 0 30px #00ff41;
+            animation: title-glitch 4s infinite;
         }
 
-        @keyframes rainbow {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+        @keyframes title-glitch {
+            0%, 90%, 100% { 
+                color: #00ff41;
+                text-shadow: 0 0 30px #00ff41;
+            }
+            95% { 
+                color: #ff0041;
+                text-shadow: 0 0 30px #ff0041;
+                transform: translateX(2px);
+            }
         }
 
-        .status {
-            font-family: monospace;
-            font-size: 14px;
-            color: #00ff88;
-            text-align: right;
+        .classified-data {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff41;
+            padding: 8px 12px;
+            font-size: 11px;
+            color: #00ff41;
             opacity: 0.8;
+            animation: data-flicker 3s infinite;
         }
 
-        /* コントロールパネル */
+        @keyframes data-flicker {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.3; }
+        }
+
+        /* 左パネル - 基本制御 */
         .control-panel {
             position: absolute;
-            left: 20px;
-            top: 50%;
+            left: 15px;
+            top: 45%;
             transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #00ff88;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 50px rgba(0, 255, 136, 0.3);
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #00ff41;
+            padding: 15px;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+            min-width: 180px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 右パネル - 機密機能 */
+        .classified-panel {
+            position: absolute;
+            right: 15px;
+            top: 45%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #ff0041;
+            padding: 15px;
+            box-shadow: 0 0 30px rgba(255, 0, 65, 0.2);
             min-width: 200px;
+            backdrop-filter: blur(5px);
         }
 
+        /* 隠されたパネル */
+        .hidden-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.98);
+            border: 2px solid #ff4100;
+            padding: 20px;
+            box-shadow: 0 0 50px rgba(255, 65, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .hidden-panel.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* セクション */
         .section {
-            margin-bottom: 20px;
-        }
-
-        .section h3 {
-            color: #00ff88;
-            font-size: 14px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .button-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
             margin-bottom: 15px;
         }
 
-        .btn {
-            background: rgba(0, 255, 136, 0.1);
-            border: 1px solid #00ff88;
-            color: #00ff88;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Orbitron', monospace;
+        .section h3 {
             font-size: 12px;
+            margin-bottom: 10px;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        .classified-section h3 {
+            color: #ff0041;
+        }
+
+        .entity-section h3 {
+            color: #00ff41;
+        }
+
+        .void-section h3 {
+            color: #ff4100;
+        }
+
+        /* ボタン */
+        .btn {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 6px 10px;
+            border-radius: 3px;
+            cursor: none;
+            transition: all 0.3s ease;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin: 2px;
+            display: inline-block;
+            width: calc(50% - 4px);
         }
 
         .btn:hover {
-            background: rgba(0, 255, 136, 0.3);
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-            transform: translateY(-2px);
+            background: rgba(0, 255, 65, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
         }
 
         .btn.active {
-            background: #00ff88;
+            background: #00ff41;
             color: #000;
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.8);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.8);
         }
 
+        .classified-btn {
+            background: rgba(255, 0, 65, 0.1);
+            border: 1px solid #ff0041;
+            color: #ff0041;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .classified-btn:hover {
+            background: rgba(255, 0, 65, 0.2);
+            box-shadow: 0 0 15px rgba(255, 0, 65, 0.3);
+        }
+
+        .void-btn {
+            background: rgba(255, 65, 0, 0.1);
+            border: 1px solid #ff4100;
+            color: #ff4100;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .void-btn:hover {
+            background: rgba(255, 65, 0, 0.2);
+            box-shadow: 0 0 15px rgba(255, 65, 0, 0.3);
+        }
+
+        /* 暗号入力 */
+        .cipher-input {
+            background: transparent;
+            border: 1px solid #ff0041;
+            color: #ff0041;
+            padding: 8px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            width: 100%;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .cipher-input::placeholder {
+            color: rgba(255, 0, 65, 0.5);
+        }
+
+        /* カラーピッカー */
         .color-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
+            gap: 4px;
+            margin-bottom: 10px;
         }
 
         .color-btn {
-            width: 30px;
-            height: 30px;
-            border: 2px solid #00ff88;
-            border-radius: 50%;
-            cursor: pointer;
+            width: 25px;
+            height: 25px;
+            border: 1px solid #00ff41;
+            cursor: none;
             transition: all 0.3s ease;
         }
 
         .color-btn:hover {
             transform: scale(1.2);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
 
         .color-btn.active {
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
             transform: scale(1.3);
         }
 
-        /* ミステリアスパネル */
-        .mystery-panel {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #ff0088;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 50px rgba(255, 0, 136, 0.3);
-            min-width: 180px;
-        }
-
-        .mystery-panel h3 {
-            color: #ff0088;
-            font-size: 14px;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .mystery-btn {
-            width: 100%;
-            background: rgba(255, 0, 136, 0.1);
-            border: 1px solid #ff0088;
-            color: #ff0088;
-            padding: 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Orbitron', monospace;
-            font-size: 12px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .mystery-btn:hover {
-            background: rgba(255, 0, 136, 0.3);
-            box-shadow: 0 0 20px rgba(255, 0, 136, 0.5);
-        }
-
-        /* 底部コントロール */
+        /* 底部制御 */
         .bottom-controls {
             position: absolute;
-            bottom: 20px;
+            bottom: 15px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 15px;
+            gap: 10px;
             align-items: center;
         }
 
-        .play-btn {
-            width: 60px;
-            height: 60px;
+        .quantum-btn {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #00ff88, #0088ff);
-            border: none;
+            background: radial-gradient(circle, #00ff41, #004411);
+            border: 2px solid #00ff41;
             color: #000;
-            font-size: 24px;
-            cursor: pointer;
+            font-size: 18px;
+            cursor: none;
             transition: all 0.3s ease;
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
         }
 
-        .play-btn:hover {
+        .quantum-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 50px rgba(0, 255, 136, 0.8);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.6);
         }
 
-        .speed-control {
-            background: rgba(0, 0, 0, 0.9);
-            border: 1px solid #0088ff;
-            border-radius: 20px;
-            padding: 8px 15px;
-            color: #0088ff;
-            font-family: 'Orbitron', monospace;
-            font-size: 12px;
-        }
-
-        /* グリッチエフェクト */
-        .glitch {
-            animation: glitch 0.3s infinite;
-        }
-
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        /* ランダムイベント通知 */
-        .event-notification {
+        /* アラート通知 */
+        .alert-system {
             position: absolute;
-            top: 100px;
-            right: 20px;
-            background: rgba(255, 0, 136, 0.9);
+            top: 80px;
+            right: 15px;
+            background: rgba(255, 0, 65, 0.9);
             color: #fff;
-            padding: 15px 20px;
-            border-radius: 5px;
-            font-family: 'Orbitron', monospace;
-            font-size: 12px;
+            padding: 12px 15px;
+            font-size: 11px;
             opacity: 0;
             transform: translateX(100px);
             transition: all 0.5s ease;
-            max-width: 250px;
+            max-width: 280px;
+            border-left: 4px solid #ff0041;
         }
 
-        .event-notification.show {
+        .alert-system.show {
             opacity: 1;
             transform: translateX(0);
         }
 
-        /* レスポンシブ */
-        @media (max-width: 768px) {
-            .control-panel {
-                left: 10px;
-                top: auto;
-                bottom: 100px;
-                transform: none;
-                min-width: auto;
-                width: calc(50% - 20px);
-            }
-            
-            .mystery-panel {
-                right: 10px;
-                top: auto;
-                bottom: 100px;
-                transform: none;
-                min-width: auto;
-                width: calc(50% - 20px);
-            }
-            
-            .title {
-                font-size: 24px;
-            }
-            
-            .button-grid {
-                grid-template-columns: 1fr;
-            }
+        .alert-system.classified {
+            background: rgba(255, 65, 0, 0.9);
+            border-left-color: #ff4100;
         }
 
-        /* サイバーパンクな装飾 */
+        /* 監視カメラ UI */
+        .surveillance {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff41;
+            padding: 8px;
+            font-size: 10px;
+            color: #00ff41;
+            min-width: 120px;
+        }
+
+        .surveillance::before {
+            content: '● REC';
+            color: #ff0041;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* 秘密のスキャンライン */
         .scanline {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #00ff88, transparent);
-            animation: scan 3s linear infinite;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00ff41, transparent);
+            animation: scan 2s linear infinite;
             z-index: 1000;
+            opacity: 0.7;
         }
 
         @keyframes scan {
@@ -316,10 +398,89 @@
             100% { top: 100vh; opacity: 0; }
         }
 
-        /* ホログラムエフェクト */
-        .hologram {
-            background: linear-gradient(45deg, rgba(0, 255, 136, 0.1), rgba(0, 136, 255, 0.1));
-            backdrop-filter: blur(2px);
+        /* 暗号テキスト */
+        .encrypted-text {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: rgba(0, 255, 65, 0.6);
+            animation: decrypt 8s infinite;
+        }
+
+        @keyframes decrypt {
+            0%, 80% { 
+                content: "████████████";
+                color: rgba(255, 0, 65, 0.8);
+            }
+            90%, 100% { 
+                color: rgba(0, 255, 65, 0.8);
+            }
+        }
+
+        /* 隠された要素 */
+        .easter-egg {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            font-size: 8px;
+            color: rgba(255, 255, 255, 0.1);
+            cursor: none;
+        }
+
+        .easter-egg:hover {
+            color: #ff4100;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .control-panel, .classified-panel {
+                position: fixed;
+                bottom: 0;
+                top: auto;
+                transform: none;
+                width: calc(50% - 20px);
+                left: 10px;
+            }
+            
+            .classified-panel {
+                left: auto;
+                right: 10px;
+            }
+            
+            .title {
+                font-size: 20px;
+            }
+        }
+
+        /* 特殊エフェクト */
+        .distortion {
+            filter: hue-rotate(180deg) invert(1);
+            animation: distort 0.5s ease-out;
+        }
+
+        @keyframes distort {
+            0% { filter: hue-rotate(0deg) invert(0); }
+            50% { filter: hue-rotate(180deg) invert(1); }
+            100% { filter: hue-rotate(0deg) invert(0); }
+        }
+
+        .phase-shift {
+            animation: phase 3s ease-in-out;
+        }
+
+        @keyframes phase {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            33% { transform: scale(0.5) rotate(120deg); }
+            66% { transform: scale(1.5) rotate(240deg); }
+        }
+
+        /* 警告フラッシュ */
+        .warning-flash {
+            animation: warning 0.2s infinite;
+        }
+
+        @keyframes warning {
+            0%, 100% { background-color: transparent; }
+            50% { background-color: rgba(255, 0, 0, 0.1); }
         }
     </style>
 </head>
@@ -327,104 +488,159 @@
     <div id="container">
         <div id="canvas-container"></div>
         
-        <!-- サイバーパンクな装飾 -->
+        <!-- カスタムカーソル -->
+        <div class="cursor" id="cursor"></div>
+        
+        <!-- マトリックス背景 -->
+        <div class="matrix-bg"></div>
+        
+        <!-- スキャンライン -->
         <div class="scanline"></div>
         
         <!-- ヘッダー -->
         <div class="header">
-            <div class="title">NEXUS</div>
-            <div class="status">
-                <div>OBJECTS: <span id="object-count">1</span></div>
-                <div>QUANTUM: <span id="quantum-level">42%</span></div>
-                <div>STATUS: <span id="system-status">ACTIVE</span></div>
+            <div class="title" id="main-title">NEXUS-7</div>
+            <div class="classified-data">
+                <div>CLEARANCE: <span id="clearance-level">DENIED</span></div>
+                <div>ENTITIES: <span id="entity-count">01</span></div>
+                <div>THREAT: <span id="threat-level">MINIMAL</span></div>
             </div>
         </div>
 
-        <!-- コントロールパネル -->
-        <div class="control-panel hologram">
-            <div class="section">
-                <h3>🔮 Entity</h3>
-                <div class="button-grid">
-                    <button class="btn active" onclick="changeShape('cube')">Cube</button>
-                    <button class="btn" onclick="changeShape('sphere')">Sphere</button>
-                    <button class="btn" onclick="changeShape('pyramid')">Pyramid</button>
-                    <button class="btn" onclick="changeShape('torus')">Torus</button>
-                    <button class="btn" onclick="changeShape('crystal')">Crystal</button>
-                    <button class="btn" onclick="changeShape('void')">Void</button>
-                </div>
+        <!-- 監視システム -->
+        <div class="surveillance">
+            <div style="margin-bottom: 5px;">CAM-001 ACTIVE</div>
+            <div>COORD: <span id="coordinates">000.000</span></div>
+            <div>ANOMALY: <span id="anomaly-detector">NONE</span></div>
+        </div>
+
+        <!-- 基本制御パネル -->
+        <div class="control-panel">
+            <div class="section entity-section">
+                <h3>⬢ ENTITY</h3>
+                <button class="btn active" onclick="manifestEntity('cube')">CUBE</button>
+                <button class="btn" onclick="manifestEntity('sphere')">SPHERE</button>
+                <button class="btn" onclick="manifestEntity('pyramid')">PRISM</button>
+                <button class="btn" onclick="manifestEntity('torus')">TORUS</button>
+                <button class="btn" onclick="manifestEntity('crystal')">CRYSTAL</button>
+                <button class="btn" onclick="manifestEntity('void')">VOID</button>
             </div>
 
-            <div class="section">
-                <h3>🌈 Essence</h3>
+            <div class="section entity-section">
+                <h3>⬢ SIGNATURE</h3>
                 <div class="color-grid">
-                    <div class="color-btn active" style="background: #00ff88;" onclick="changeColor('#00ff88')"></div>
-                    <div class="color-btn" style="background: #0088ff;" onclick="changeColor('#0088ff')"></div>
-                    <div class="color-btn" style="background: #ff0088;" onclick="changeColor('#ff0088')"></div>
-                    <div class="color-btn" style="background: #ffff00;" onclick="changeColor('#ffff00')"></div>
-                    <div class="color-btn" style="background: #ff6600;" onclick="changeColor('#ff6600')"></div>
-                    <div class="color-btn" style="background: #8800ff;" onclick="changeColor('#8800ff')"></div>
-                    <div class="color-btn" style="background: #ff0000;" onclick="changeColor('#ff0000')"></div>
-                    <div class="color-btn" style="background: #ffffff;" onclick="changeColor('#ffffff')"></div>
+                    <div class="color-btn active" style="background: #00ff41;" onclick="alterSignature('#00ff41')"></div>
+                    <div class="color-btn" style="background: #0088ff;" onclick="alterSignature('#0088ff')"></div>
+                    <div class="color-btn" style="background: #ff0041;" onclick="alterSignature('#ff0041')"></div>
+                    <div class="color-btn" style="background: #ffff00;" onclick="alterSignature('#ffff00')"></div>
+                    <div class="color-btn" style="background: #ff4100;" onclick="alterSignature('#ff4100')"></div>
+                    <div class="color-btn" style="background: #8800ff;" onclick="alterSignature('#8800ff')"></div>
+                    <div class="color-btn" style="background: #ffffff;" onclick="alterSignature('#ffffff')"></div>
+                    <div class="color-btn" style="background: #ff0088;" onclick="alterSignature('#ff0088')"></div>
                 </div>
             </div>
 
-            <div class="section">
-                <h3>⚡ Energy</h3>
-                <button class="btn" onclick="addRandomObject()">+ Spawn</button>
-                <button class="btn" onclick="clearScene()">⚠ Purge</button>
+            <div class="section entity-section">
+                <h3>⬢ SYSTEM</h3>
+                <button class="btn" onclick="duplicateEntity()">DUPLICATE</button>
+                <button class="btn" onclick="purgeAll()">PURGE</button>
             </div>
         </div>
 
-        <!-- ミステリアスパネル -->
-        <div class="mystery-panel hologram">
-            <h3>🌌 Unknown</h3>
-            <button class="mystery-btn" onclick="triggerQuantumEvent()">Quantum Shift</button>
-            <button class="mystery-btn" onclick="activateGlitch()">Reality Glitch</button>
-            <button class="mystery-btn" onclick="summonEntity()">Summon ???</button>
-            <button class="mystery-btn" onclick="enterVoid()">Enter Void</button>
-            <button class="mystery-btn" onclick="timeDilation()">Time Anomaly</button>
+        <!-- 機密制御パネル -->
+        <div class="classified-panel">
+            <div class="section classified-section">
+                <h3>⚠ CLASSIFIED</h3>
+                <input type="text" class="cipher-input" placeholder="ENTER CIPHER" id="cipher-input" onkeydown="checkCipher(event)">
+                <button class="classified-btn" onclick="initiateLockdown()">LOCKDOWN</button>
+                <button class="classified-btn" onclick="activatePhase()">PHASE ███</button>
+                <button class="classified-btn" onclick="summonWatcher()">SUMMON ████</button>
+                <button class="classified-btn" onclick="breachReality()">BREACH ████</button>
+                <button class="classified-btn" onclick="activateProtocol()">PROTOCOL-X</button>
+            </div>
+
+            <div class="section classified-section">
+                <h3>⚠ ANOMALY</h3>
+                <button class="classified-btn" onclick="detectAnomaly()">SCAN ZONE</button>
+                <button class="classified-btn" onclick="temporalShift()">TIME ████</button>
+            </div>
         </div>
 
-        <!-- 底部コントロール -->
+        <!-- 隠されたパネル -->
+        <div class="hidden-panel" id="void-panel">
+            <div class="section void-section">
+                <h3>█ THE VOID SPEAKS █</h3>
+                <div class="encrypted-text" style="margin-bottom: 15px;">
+                    ████ ███ ████████ ██ ███ ████ ████████<br>
+                    ██ ████ ███ ████ ████████ ███ ████<br>
+                    <span style="color: #ff4100;">THEY ARE WATCHING</span>
+                </div>
+                <button class="void-btn" onclick="acceptVoid()">ACCEPT THE VOID</button>
+                <button class="void-btn" onclick="resistVoid()">RESIST</button>
+                <button class="void-btn" onclick="closeVoidPanel()">ESCAPE</button>
+            </div>
+        </div>
+
+        <!-- 底部制御 -->
         <div class="bottom-controls">
-            <button class="play-btn" onclick="toggleAnimation()" id="play-btn">▶</button>
-            <div class="speed-control">
-                Speed: <span id="speed-display">1.0x</span>
+            <button class="quantum-btn" onclick="toggleQuantumField()" id="quantum-btn">◉</button>
+            <div style="color: #00ff41; font-size: 11px; margin: 0 15px;">
+                QUANTUM FIELD: <span id="field-status">STABLE</span>
             </div>
-            <button class="btn" onclick="resetDimension()">🔄 Reset</button>
+            <button class="btn" onclick="resetMatrix()">RESET MATRIX</button>
         </div>
 
-        <!-- ランダムイベント通知 -->
-        <div class="event-notification" id="event-notification"></div>
+        <!-- アラートシステム -->
+        <div class="alert-system" id="alert-system"></div>
+
+        <!-- イースターエッグ -->
+        <div class="easter-egg" onclick="activateEasterEgg()">
+            ⬢ v7.3.█ ⬢
+        </div>
     </div>
 
     <script>
         // グローバル変数
         let scene, camera, renderer, currentObject;
-        let isAnimating = true;
+        let isQuantumActive = true;
         let currentShape = 'cube';
-        let currentColor = '#00ff88';
-        let objects = [];
-        let animationSpeed = 1.0;
-        let quantumLevel = 42;
-        let mysteriousObjects = [];
+        let currentSignature = '#00ff41';
+        let entities = [];
+        let watchers = [];
+        let clearanceLevel = 0;
+        let anomalyCount = 0;
+        let threatLevel = 1;
+        
+        // 暗号キー
+        const cipherKeys = ['NEXUS', 'VOID', 'WATCHER', 'BREACH', 'PROTOCOL'];
+        let unlockedCiphers = [];
         
         // マウス制御
         let mouseX = 0, mouseY = 0;
         let isMouseDown = false;
         let cameraAngleX = 0, cameraAngleY = 0;
         let cameraDistance = 8;
+        
+        // ミステリアスメッセージ
+        const classifiedMessages = [
+            "⚠ UNAUTHORIZED ACCESS DETECTED",
+            "👁 SURVEILLANCE SYSTEM ACTIVATED",
+            "🔒 CLASSIFIED DATA BREACH ATTEMPT",
+            "⚡ QUANTUM INTERFERENCE DETECTED",
+            "🌀 DIMENSIONAL RIFT OPENING",
+            "👽 UNKNOWN SIGNATURE DETECTED",
+            "⚠ REALITY ANCHOR FAILING",
+            "🕳 VOID ENTITIES APPROACHING",
+            "⚠ TEMPORAL ANOMALY IN SECTOR 7",
+            "👁 THE WATCHERS HAVE NOTICED YOU"
+        ];
 
-        // ミステリアスなイベントリスト
-        const mysteriousEvents = [
-            "⚠ Dimensional rift detected...",
-            "🔮 Quantum entanglement initiated",
-            "👁 Unknown entity observing...",
-            "⚡ Energy surge from parallel dimension",
-            "🌌 Reality fabric destabilizing",
-            "💫 Time loop anomaly detected",
-            "🕳 Void portal opening nearby",
-            "👽 Extra-dimensional signal received"
+        const voidMessages = [
+            "█ YOU CANNOT ESCAPE █",
+            "█ WE HAVE BEEN WAITING █",
+            "█ THE VOID CALLS TO YOU █",
+            "█ RESISTANCE IS FUTILE █",
+            "█ JOIN US IN THE DARKNESS █"
         ];
 
         // 初期化
@@ -434,7 +650,7 @@
             // シーン作成
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x000000);
-            scene.fog = new THREE.Fog(0x000000, 1, 30);
+            scene.fog = new THREE.Fog(0x000000, 5, 25);
             
             // カメラ作成
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -447,20 +663,13 @@
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             container.appendChild(renderer.domElement);
             
-            // ライト設定
+            // 初期設定
             setupLights();
-            
-            // パーティクル追加
-            createMysteriousParticles();
-            
-            // 初期オブジェクト作成
-            createObject(currentShape, currentColor);
-            
-            // イベントリスナー
+            createQuantumField();
+            manifestEntity('cube');
             setupEventListeners();
-            
-            // ランダムイベント開始
-            startMysteriousEvents();
+            startSurveillance();
+            initiateMysteriousEvents();
             
             // アニメーション開始
             animate();
@@ -468,58 +677,54 @@
 
         // ライト設定
         function setupLights() {
-            // 環境光
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+            const ambientLight = new THREE.AmbientLight(0x001100, 0.2);
             scene.add(ambientLight);
             
-            // メインライト
-            const mainLight = new THREE.DirectionalLight(0x00ff88, 1);
-            mainLight.position.set(10, 10, 5);
+            const mainLight = new THREE.DirectionalLight(0x00ff41, 0.8);
+            mainLight.position.set(8, 8, 5);
             mainLight.castShadow = true;
             scene.add(mainLight);
             
-            // ミステリアスライト
-            const mysteryLight1 = new THREE.PointLight(0xff0088, 1, 20);
-            mysteryLight1.position.set(-5, 5, 5);
-            scene.add(mysteryLight1);
+            // ウォッチャーライト
+            const watcherLight = new THREE.PointLight(0xff0041, 1, 15);
+            watcherLight.position.set(-6, 4, 6);
+            scene.add(watcherLight);
             
-            const mysteryLight2 = new THREE.PointLight(0x0088ff, 1, 20);
-            mysteryLight2.position.set(5, -5, -5);
-            scene.add(mysteryLight2);
+            const voidLight = new THREE.PointLight(0xff4100, 0.5, 20);
+            voidLight.position.set(6, -4, -6);
+            scene.add(voidLight);
         }
 
-        // ミステリアスパーティクル
-        function createMysteriousParticles() {
-            const particleGeometry = new THREE.BufferGeometry();
-            const particleCount = 200;
-            const positions = new Float32Array(particleCount * 3);
+        // 量子フィールド
+        function createQuantumField() {
+            const fieldGeometry = new THREE.BufferGeometry();
+            const fieldCount = 300;
+            const positions = new Float32Array(fieldCount * 3);
             
-            for (let i = 0; i < particleCount * 3; i += 3) {
-                positions[i] = (Math.random() - 0.5) * 50;
-                positions[i + 1] = (Math.random() - 0.5) * 50;
-                positions[i + 2] = (Math.random() - 0.5) * 50;
+            for (let i = 0; i < fieldCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 40;
+                positions[i + 1] = (Math.random() - 0.5) * 40;
+                positions[i + 2] = (Math.random() - 0.5) * 40;
             }
             
-            particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            fieldGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             
-            const particleMaterial = new THREE.PointsMaterial({
-                color: 0x00ff88,
-                size: 0.1,
+            const fieldMaterial = new THREE.PointsMaterial({
+                color: 0x00ff41,
+                size: 0.05,
                 transparent: true,
                 opacity: 0.6,
                 blending: THREE.AdditiveBlending
             });
             
-            const particles = new THREE.Points(particleGeometry, particleMaterial);
-            scene.add(particles);
-            
-            // パーティクルアニメーション
-            particles.userData = { rotationSpeed: 0.001 };
+            const quantumField = new THREE.Points(fieldGeometry, fieldMaterial);
+            scene.add(quantumField);
+            quantumField.userData = { isQuantumField: true };
         }
 
-        // オブジェクト作成
-        function createObject(shape, color, isMystery = false) {
-            if (!isMystery && currentObject) {
+        // エンティティ作成
+        function manifestEntity(shape, isWatcher = false) {
+            if (!isWatcher && currentObject) {
                 scene.remove(currentObject);
                 currentObject.geometry.dispose();
                 currentObject.material.dispose();
@@ -543,244 +748,365 @@
                     geometry = new THREE.OctahedronGeometry(2, 0);
                     break;
                 case 'void':
-                    geometry = new THREE.IcosahedronGeometry(1.8, 1);
+                    geometry = new THREE.IcosahedronGeometry(1.8, 2);
                     break;
-                default:
-                    geometry = new THREE.BoxGeometry(2, 2, 2);
+                case 'watcher':
+                    geometry = new THREE.SphereGeometry(0.8, 32, 32);
+                    break;
             }
             
+            const materialColor = isWatcher ? '#ff0041' : currentSignature;
             const material = new THREE.MeshPhysicalMaterial({
-                color: new THREE.Color(color),
-                metalness: 0.3,
-                roughness: 0.1,
+                color: new THREE.Color(materialColor),
+                metalness: isWatcher ? 0.8 : 0.3,
+                roughness: isWatcher ? 0.1 : 0.2,
                 transparent: true,
-                opacity: 0.9,
-                emissive: new THREE.Color(color),
-                emissiveIntensity: 0.1
+                opacity: isWatcher ? 0.7 : 0.9,
+                emissive: new THREE.Color(materialColor),
+                emissiveIntensity: isWatcher ? 0.3 : 0.1
             });
             
-            const object = new THREE.Mesh(geometry, material);
-            object.castShadow = true;
-            object.receiveShadow = true;
+            const entity = new THREE.Mesh(geometry, material);
+            entity.castShadow = true;
+            entity.receiveShadow = true;
             
-            if (isMystery) {
-                object.position.set(
+            if (isWatcher) {
+                entity.position.set(
+                    (Math.random() - 0.5) * 20,
                     (Math.random() - 0.5) * 15,
-                    (Math.random() - 0.5) * 10,
-                    (Math.random() - 0.5) * 15
+                    (Math.random() - 0.5) * 20
                 );
-                object.userData = {
-                    isMystery: true,
+                entity.userData = {
+                    isWatcher: true,
+                    watchTarget: currentObject,
                     animationOffset: Math.random() * Math.PI * 2,
-                    rotationSpeed: (Math.random() - 0.5) * 0.02
+                    rotationSpeed: (Math.random() - 0.5) * 0.03
                 };
-                mysteriousObjects.push(object);
+                watchers.push(entity);
+                threatLevel++;
             } else {
-                currentObject = object;
-                objects = [currentObject];
+                currentShape = shape;
+                currentObject = entity;
+                entities = [currentObject];
             }
             
-            scene.add(object);
-            updateStats();
-            return object;
+            scene.add(entity);
+            updateSurveillance();
+            return entity;
         }
 
-        // ミステリアス機能
-        function triggerQuantumEvent() {
-            quantumLevel = Math.random() * 100;
-            document.getElementById('quantum-level').textContent = Math.round(quantumLevel) + '%';
-            
-            // 全オブジェクトの色をランダムに変更
-            const colors = ['#00ff88', '#0088ff', '#ff0088', '#ffff00', '#ff6600', '#8800ff'];
-            objects.concat(mysteriousObjects).forEach(obj => {
-                if (obj && obj.material) {
-                    const newColor = colors[Math.floor(Math.random() * colors.length)];
-                    obj.material.color.setHex(newColor.replace('#', '0x'));
-                    obj.material.emissive.setHex(newColor.replace('#', '0x'));
+        // 機密機能
+        function checkCipher(event) {
+            if (event.key === 'Enter') {
+                const input = event.target.value.toUpperCase();
+                if (cipherKeys.includes(input) && !unlockedCiphers.includes(input)) {
+                    unlockedCiphers.push(input);
+                    clearanceLevel++;
+                    document.getElementById('clearance-level').textContent = `LEVEL-${clearanceLevel}`;
+                    triggerAlert(`🔓 CIPHER ACCEPTED: ${input}`, 'classified');
+                    
+                    if (clearanceLevel >= 3) {
+                        document.getElementById('main-title').textContent = '█ NEXUS-████ █';
+                        triggerAlert('⚠ MAXIMUM CLEARANCE ACHIEVED', 'classified');
+                    }
+                } else {
+                    triggerAlert('❌ INVALID CIPHER', 'show');
                 }
-            });
-            
-            showEvent("🔮 Quantum field destabilized! Colors shifted!");
+                event.target.value = '';
+            }
         }
 
-        function activateGlitch() {
-            document.body.classList.add('glitch');
-            
-            // ランダムな位置にオブジェクトを移動
-            if (currentObject) {
-                currentObject.position.set(
-                    (Math.random() - 0.5) * 10,
-                    (Math.random() - 0.5) * 10,
-                    (Math.random() - 0.5) * 10
-                );
+        function initiateLockdown() {
+            if (clearanceLevel < 1) {
+                triggerAlert('❌ INSUFFICIENT CLEARANCE', 'show');
+                return;
             }
             
-            setTimeout(() => {
-                document.body.classList.remove('glitch');
-                if (currentObject) {
-                    currentObject.position.set(0, 0, 0);
-                }
-            }, 1000);
-            
-            showEvent("⚠ Reality glitch detected! Dimensional coordinates reset.");
-        }
-
-        function summonEntity() {
-            const shapes = ['crystal', 'void', 'sphere', 'torus'];
-            const colors = ['#ff0088', '#8800ff', '#0088ff', '#ffff00'];
-            const shape = shapes[Math.floor(Math.random() * shapes.length)];
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            
-            createObject(shape, color, true);
-            showEvent("👁 Unknown entity materialized from the void...");
-        }
-
-        function enterVoid() {
-            scene.background = new THREE.Color(0x110011);
-            scene.fog.color = new THREE.Color(0x110011);
-            
-            // 全ての光を暗くする
-            scene.children.forEach(child => {
-                if (child.isLight) {
-                    child.intensity *= 0.3;
-                }
-            });
+            document.body.classList.add('warning-flash');
+            scene.background = new THREE.Color(0x330000);
             
             setTimeout(() => {
+                document.body.classList.remove('warning-flash');
                 scene.background = new THREE.Color(0x000000);
-                scene.fog.color = new THREE.Color(0x000000);
-                scene.children.forEach(child => {
-                    if (child.isLight) {
-                        child.intensity /= 0.3;
+            }, 3000);
+            
+            triggerAlert('🔒 LOCKDOWN INITIATED - ALL SYSTEMS SECURED', 'classified');
+        }
+
+        function activatePhase() {
+            if (clearanceLevel < 2) {
+                triggerAlert('❌ INSUFFICIENT CLEARANCE', 'show');
+                return;
+            }
+            
+            const container = document.getElementById('container');
+            container.classList.add('phase-shift');
+            
+            // 全エンティティを位相変換
+            entities.concat(watchers).forEach(entity => {
+                if (entity) {
+                    entity.material.opacity = 0.3;
+                    entity.position.multiplyScalar(0.5);
+                }
+            });
+            
+            setTimeout(() => {
+                container.classList.remove('phase-shift');
+                entities.concat(watchers).forEach(entity => {
+                    if (entity) {
+                        entity.material.opacity = 0.9;
+                        entity.position.multiplyScalar(2);
                     }
                 });
             }, 3000);
             
-            showEvent("🕳 Entered the void... reality temporarily suspended.");
+            triggerAlert('🌀 PHASE SHIFT COMPLETE', 'classified');
         }
 
-        function timeDilation() {
-            const originalSpeed = animationSpeed;
-            animationSpeed = 0.1;
-            document.getElementById('speed-display').textContent = '0.1x';
+        function summonWatcher() {
+            if (clearanceLevel < 1) {
+                triggerAlert('❌ INSUFFICIENT CLEARANCE', 'show');
+                return;
+            }
+            
+            manifestEntity('watcher', true);
+            triggerAlert('👁 WATCHER ENTITY SUMMONED', 'classified');
+            document.getElementById('anomaly-detector').textContent = 'HOSTILE';
+        }
+
+        function breachReality() {
+            if (clearanceLevel < 3) {
+                triggerAlert('❌ MAXIMUM CLEARANCE REQUIRED', 'show');
+                return;
+            }
+            
+            document.getElementById('container').classList.add('distortion');
+            
+            // リアリティブリーチエフェクト
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const randomEntity = manifestEntity('void', true);
+                    randomEntity.material.color.setHex(0xff4100);
+                }, i * 200);
+            }
             
             setTimeout(() => {
-                animationSpeed = originalSpeed * 3;
-                document.getElementById('speed-display').textContent = '3.0x';
+                document.getElementById('container').classList.remove('distortion');
+            }, 2000);
+            
+            triggerAlert('⚠ REALITY BREACH DETECTED - CONTAINMENT FAILING', 'classified');
+            showVoidPanel();
+        }
+
+        function activateProtocol() {
+            if (clearanceLevel < 2) {
+                triggerAlert('❌ INSUFFICIENT CLEARANCE', 'show');
+                return;
+            }
+            
+            // プロトコルX実行
+            document.getElementById('main-title').textContent = '⚠ PROTOCOL-X ACTIVE ⚠';
+            document.getElementById('threat-level').textContent = 'MAXIMUM';
+            
+            // 全システム異常
+            anomalyCount = 99;
+            document.getElementById('anomaly-detector').textContent = 'CRITICAL';
+            
+            triggerAlert('⚠ PROTOCOL-X ACTIVATED - ANOMALY CASCADE INITIATED', 'classified');
+        }
+
+        function detectAnomaly() {
+            anomalyCount += Math.floor(Math.random() * 10) + 1;
+            if (anomalyCount > 50) {
+                triggerAlert('⚠ CRITICAL ANOMALY LEVELS DETECTED', 'classified');
+                document.getElementById('anomaly-detector').textContent = 'CRITICAL';
+            } else {
+                triggerAlert(`📡 ${anomalyCount} ANOMALIES DETECTED`, 'show');
+                document.getElementById('anomaly-detector').textContent = anomalyCount.toString();
+            }
+        }
+
+        function temporalShift() {
+            if (clearanceLevel < 1) {
+                triggerAlert('❌ INSUFFICIENT CLEARANCE', 'show');
+                return;
+            }
+            
+            // 時間歪曲エフェクト
+            let timeMultiplier = 0.1;
+            const originalTime = Date.now;
+            
+            // 超低速化
+            setTimeout(() => {
+                timeMultiplier = 5.0;
+                triggerAlert('⚡ TEMPORAL ACCELERATION DETECTED', 'classified');
                 
+                // 超高速化
                 setTimeout(() => {
-                    animationSpeed = originalSpeed;
-                    document.getElementById('speed-display').textContent = '1.0x';
+                    timeMultiplier = 1.0;
+                    triggerAlert('🕰 TEMPORAL FLOW NORMALIZED', 'classified');
                 }, 2000);
             }, 2000);
             
-            showEvent("⏰ Time dilation field activated! Temporal flow altered.");
+            triggerAlert('⏰ TEMPORAL DISTORTION INITIATED', 'classified');
         }
 
-        // イベント通知
-        function showEvent(message) {
-            const notification = document.getElementById('event-notification');
-            notification.textContent = message;
-            notification.classList.add('show');
-            
+        // ボイドパネル
+        function showVoidPanel() {
+            document.getElementById('void-panel').classList.add('active');
+            triggerAlert(voidMessages[Math.floor(Math.random() * voidMessages.length)], 'classified');
+        }
+
+        function acceptVoid() {
+            document.body.style.background = '#110011';
+            document.getElementById('container').style.filter = 'invert(1) hue-rotate(180deg)';
+            triggerAlert('█ YOU HAVE JOINED THE VOID █', 'classified');
+            closeVoidPanel();
+        }
+
+        function resistVoid() {
+            document.body.classList.add('warning-flash');
             setTimeout(() => {
-                notification.classList.remove('show');
-            }, 4000);
+                document.body.classList.remove('warning-flash');
+            }, 1000);
+            triggerAlert('⚠ RESISTANCE DETECTED - VOID DISPLEASED', 'classified');
+            closeVoidPanel();
         }
 
-        // ランダムイベント
-        function startMysteriousEvents() {
-            setInterval(() => {
-                if (Math.random() < 0.3) { // 30%の確率
-                    const event = mysteriousEvents[Math.floor(Math.random() * mysteriousEvents.length)];
-                    showEvent(event);
-                }
-            }, 10000); // 10秒ごと
+        function closeVoidPanel() {
+            document.getElementById('void-panel').classList.remove('active');
         }
 
         // 基本機能
-        function changeShape(shape) {
-            currentShape = shape;
-            createObject(shape, currentColor);
-            updateActiveButton('.button-grid .btn', shape);
-        }
-
-        function changeColor(color) {
-            currentColor = color;
+        function alterSignature(signature) {
+            currentSignature = signature;
             if (currentObject) {
-                currentObject.material.color.setHex(color.replace('#', '0x'));
-                currentObject.material.emissive.setHex(color.replace('#', '0x'));
+                currentObject.material.color.setHex(signature.replace('#', '0x'));
+                currentObject.material.emissive.setHex(signature.replace('#', '0x'));
             }
-            updateActiveColorButton(color);
+            updateActiveColorButton(signature);
         }
 
-        function toggleAnimation() {
-            isAnimating = !isAnimating;
-            document.getElementById('play-btn').textContent = isAnimating ? '⏸' : '▶';
-            document.getElementById('system-status').textContent = isAnimating ? 'ACTIVE' : 'PAUSED';
-        }
-
-        function addRandomObject() {
+        function duplicateEntity() {
             const shapes = ['cube', 'sphere', 'pyramid', 'torus', 'crystal', 'void'];
-            const colors = ['#00ff88', '#0088ff', '#ff0088', '#ffff00', '#ff6600', '#8800ff'];
+            const signatures = ['#00ff41', '#0088ff', '#ff0041', '#ffff00', '#ff4100', '#8800ff'];
             const shape = shapes[Math.floor(Math.random() * shapes.length)];
-            const color = colors[Math.floor(Math.random() * colors.length)];
+            const signature = signatures[Math.floor(Math.random() * signatures.length)];
             
-            createObject(shape, color, true);
+            const newEntity = manifestEntity(shape, true);
+            newEntity.material.color.setHex(signature.replace('#', '0x'));
         }
 
-        function clearScene() {
-            mysteriousObjects.forEach(obj => {
-                scene.remove(obj);
-                obj.geometry.dispose();
-                obj.material.dispose();
+        function purgeAll() {
+            watchers.forEach(watcher => {
+                scene.remove(watcher);
+                watcher.geometry.dispose();
+                watcher.material.dispose();
             });
-            mysteriousObjects = [];
-            updateStats();
-            showEvent("⚠ All entities purged from this dimension.");
+            watchers = [];
+            threatLevel = 1;
+            updateSurveillance();
+            triggerAlert('🧹 ALL ANOMALOUS ENTITIES PURGED', 'show');
         }
 
-        function resetDimension() {
-            clearScene();
-            createObject('cube', '#00ff88');
+        function toggleQuantumField() {
+            isQuantumActive = !isQuantumActive;
+            document.getElementById('field-status').textContent = isQuantumActive ? 'ACTIVE' : 'UNSTABLE';
+            document.getElementById('quantum-btn').style.background = isQuantumActive ? 
+                'radial-gradient(circle, #00ff41, #004411)' : 
+                'radial-gradient(circle, #ff0041, #440011)';
+        }
+
+        function resetMatrix() {
+            // すべてリセット
+            purgeAll();
+            manifestEntity('cube');
+            clearanceLevel = 0;
+            anomalyCount = 0;
+            threatLevel = 1;
             cameraAngleX = 0;
             cameraAngleY = 0;
             cameraDistance = 8;
-            animationSpeed = 1.0;
-            quantumLevel = 42;
-            document.getElementById('speed-display').textContent = '1.0x';
-            document.getElementById('quantum-level').textContent = '42%';
-            showEvent("🔄 Dimension reset to baseline parameters.");
+            
+            document.getElementById('clearance-level').textContent = 'DENIED';
+            document.getElementById('main-title').textContent = 'NEXUS-7';
+            document.getElementById('threat-level').textContent = 'MINIMAL';
+            document.getElementById('anomaly-detector').textContent = 'NONE';
+            document.body.style.background = '#000';
+            document.getElementById('container').style.filter = 'none';
+            
+            triggerAlert('🔄 MATRIX RESET COMPLETE', 'show');
         }
 
-        // UI更新
-        function updateActiveButton(selector, value) {
-            document.querySelectorAll(selector).forEach(btn => btn.classList.remove('active'));
-            const buttons = document.querySelectorAll(selector);
-            const shapes = ['cube', 'sphere', 'pyramid', 'torus', 'crystal', 'void'];
-            const index = shapes.indexOf(value);
-            if (index !== -1 && buttons[index]) {
-                buttons[index].classList.add('active');
-            }
+        // サーベイランス
+        function startSurveillance() {
+            setInterval(() => {
+                const coords = (Math.random() * 999).toFixed(3);
+                document.getElementById('coordinates').textContent = coords;
+                
+                if (Math.random() < 0.1) {
+                    triggerAlert(classifiedMessages[Math.floor(Math.random() * classifiedMessages.length)], 'show');
+                }
+            }, 3000);
         }
 
-        function updateActiveColorButton(color) {
-            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.color-btn[style*="${color}"]`)?.classList.add('active');
+        function updateSurveillance() {
+            document.getElementById('entity-count').textContent = String(entities.length + watchers.length).padStart(2, '0');
+            document.getElementById('threat-level').textContent = threatLevel > 5 ? 'MAXIMUM' : 
+                                                                 threatLevel > 3 ? 'HIGH' : 
+                                                                 threatLevel > 1 ? 'MODERATE' : 'MINIMAL';
         }
 
-        function updateStats() {
-            document.getElementById('object-count').textContent = objects.length + mysteriousObjects.length;
+        // アラート
+        function triggerAlert(message, type = 'show') {
+            const alert = document.getElementById('alert-system');
+            alert.textContent = message;
+            alert.className = `alert-system ${type}`;
+            
+            setTimeout(() => {
+                alert.classList.remove('show', 'classified');
+            }, 4000);
         }
 
-        // マウス制御
+        // イースターエッグ
+        function activateEasterEgg() {
+            triggerAlert('⬢ DEVELOPER MODE ACTIVATED ⬢', 'classified');
+            clearanceLevel = 5;
+            document.getElementById('clearance-level').textContent = 'ADMIN';
+            unlockedCiphers = [...cipherKeys];
+        }
+
+        // ミステリアスイベント
+        function initiateMysteriousEvents() {
+            setInterval(() => {
+                if (Math.random() < 0.2) {
+                    const event = classifiedMessages[Math.floor(Math.random() * classifiedMessages.length)];
+                    triggerAlert(event, 'show');
+                }
+                
+                if (Math.random() < 0.05 && clearanceLevel >= 2) {
+                    showVoidPanel();
+                }
+            }, 8000);
+        }
+
+        // カーソル追跡
         function setupEventListeners() {
+            const cursor = document.getElementById('cursor');
+            
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
             const canvas = renderer.domElement;
             
             canvas.addEventListener('mousedown', (e) => {
                 isMouseDown = true;
-                mouseX = e.clientX;
-                mouseY = e.clientY;
+                cursor.style.transform = 'scale(1.5)';
             });
             
             canvas.addEventListener('mousemove', (e) => {
@@ -794,18 +1120,16 @@
                 cameraAngleX = Math.max(-Math.PI/2, Math.min(Math.PI/2, cameraAngleX));
                 
                 updateCameraPosition();
-                
-                mouseX = e.clientX;
-                mouseY = e.clientY;
             });
             
             canvas.addEventListener('mouseup', () => {
                 isMouseDown = false;
+                cursor.style.transform = 'scale(1)';
             });
             
             canvas.addEventListener('wheel', (e) => {
                 cameraDistance += e.deltaY * 0.01;
-                cameraDistance = Math.max(3, Math.min(20, cameraDistance));
+                cameraDistance = Math.max(3, Math.min(25, cameraDistance));
                 updateCameraPosition();
             });
             
@@ -825,33 +1149,56 @@
             camera.lookAt(0, 0, 0);
         }
 
+        // UI更新
+        function updateActiveButton(selector, value) {
+            document.querySelectorAll(selector).forEach(btn => btn.classList.remove('active'));
+            const buttons = document.querySelectorAll(selector);
+            const shapes = ['cube', 'sphere', 'pyramid', 'torus', 'crystal', 'void'];
+            const index = shapes.indexOf(value);
+            if (index !== -1 && buttons[index]) {
+                buttons[index].classList.add('active');
+            }
+        }
+
+        function updateActiveColorButton(signature) {
+            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.color-btn[style*="${signature}"]`)?.classList.add('active');
+        }
+
         // アニメーションループ
         function animate() {
             requestAnimationFrame(animate);
             
-            if (isAnimating) {
-                const time = Date.now() * 0.001 * animationSpeed;
+            if (isQuantumActive) {
+                const time = Date.now() * 0.001;
                 
-                // メインオブジェクトアニメーション
+                // メインエンティティ
                 if (currentObject) {
-                    currentObject.rotation.x = time;
-                    currentObject.rotation.y = time * 0.7;
-                    currentObject.position.y = Math.sin(time * 2) * 0.5;
+                    currentObject.rotation.x = time * 0.5;
+                    currentObject.rotation.y = time * 0.3;
+                    currentObject.position.y = Math.sin(time * 2) * 0.3;
                 }
                 
-                // ミステリアスオブジェクトアニメーション
-                mysteriousObjects.forEach((obj, index) => {
-                    if (obj && obj.userData) {
-                        obj.rotation.x += obj.userData.rotationSpeed;
-                        obj.rotation.y += obj.userData.rotationSpeed * 0.7;
-                        obj.position.y += Math.sin(time * 2 + obj.userData.animationOffset) * 0.02;
+                // ウォッチャー
+                watchers.forEach((watcher, index) => {
+                    if (watcher && watcher.userData) {
+                        watcher.rotation.x += watcher.userData.rotationSpeed;
+                        watcher.rotation.y += watcher.userData.rotationSpeed * 0.7;
+                        
+                        // ウォッチャーは常にメインオブジェクトを見る
+                        if (currentObject) {
+                            watcher.lookAt(currentObject.position);
+                        }
+                        
+                        watcher.position.y += Math.sin(time * 3 + watcher.userData.animationOffset) * 0.02;
                     }
                 });
                 
-                // パーティクルアニメーション
+                // 量子フィールド
                 scene.children.forEach(child => {
-                    if (child.isPoints) {
+                    if (child.userData && child.userData.isQuantumField) {
                         child.rotation.y += 0.001;
+                        child.rotation.x += 0.0005;
                     }
                 });
             }
@@ -859,7 +1206,7 @@
             renderer.render(scene, camera);
         }
 
-        // アプリケーション開始
+        // 開始
         init();
     </script>
 </body>
