@@ -1,0 +1,266 @@
+# Python変数(動的型付け)
+x = 10
+y = "hello"
+
+# C変数
+cdef int i = 10
+cdef double d = 3.14
+cdef float f = 2.5
+cdef long l = 100000
+cdef char c = 'A'
+cdef bint flag = True # booleanのCython版
+
+cdef int a, b, c
+cdef double x = 1.0, y = 2.0
+cdef int[:] array # メモリビュー
+
+# def: 通常のpython関数(python側から呼べる)
+def python_func(x):
+    return x * 2
+
+# cdef: C関数(python側から呼べない，高速)
+cdef int c_func(int x):
+    return x * 2
+
+# cpdef: Python/C両対応(両方から呼べる)
+cpdef int hybrid_func(int x):
+    return x * 2
+
+# 引数と戻り値の型指定
+cpdef double calculate(double x, int n):
+    cdef double result = 0.0
+    cdef int i
+
+    for i in range(n):
+        result += x * in
+    
+    return result
+
+# 例外を発生させる可能性がある関数
+cpdef int divide(int a, int b) except -1:
+    if b == 0:
+        raise ValueError("ゼロ除算")
+    return a // b
+
+# 整数型
+cdef char c # 8ビット
+cdef short s # 16ビット
+cdef int i # 12ビット
+cdef long l # 32/64ビット
+cdef long long ll # 64ビット
+
+# 符号なし変数
+cdef unsigned char uc
+cdef unsigned int ui
+cdef unsigned long ul
+
+# 浮動小数点
+cdef float f # 32ビット
+cdef double d # 64ビット
+
+# その他
+cdef bint b # boolean (CのintとしてTrue/False)
+cdef void* ptr # ポインタ
+
+cdef list my_list = []
+cdef dict my_dict = {}
+cdef str my_string = "hello"
+cdef tuple my_tuple = (1, 2, 3)
+cdef set my_set = {1, 2, 3}
+
+# Numpy配列のメモリビュー
+import numpy as np
+cimport numpy as np
+
+def process_array(double[:] arr):
+    """1次元配列"""
+    cdef int i
+    cdef int n = arr.shape[0]
+    cdef double total = 0.0
+
+    for i in range(n):
+        total += arr[i]
+    
+    return total
+
+def process_2d(double[:, :] matrix):
+    """2次元配列"""
+    cdef int i, j
+    cdef int rows = matrix.shape[0]
+    cdef int cols = matrix.shape[1]
+
+    for i in range(rows):
+        for j in range(cols):
+            matrix[i, j] *= 2.0
+
+def process_3d(double[:, :, :] tensor):
+    """3次元配列"""
+    cdef int i, j, k
+    cdef int d0 = tensor.shape[0]
+    cdef int d1 = tensor.shape[1]
+    cdef int d2 = tensor.shape[2]
+
+    # 処理...
+
+# C配列
+from libc.stdlib cimport malloc, free
+
+cdef int* create_array(int size):
+    cdef int* arr = <int*>malloc(size * sizeof(int))
+    cdef int i
+
+    for i in range(size):
+        arr[i] = i
+    
+    return arr
+
+# 使用後はfreeが必要
+cdef int* arr = create_array(100)
+
+free(arr)
+
+# 通常のfor
+cdef int i
+for i in range(100):
+    print(i)
+
+# C風for (高速)
+cdef int j
+for j from 0 <= j < 100:
+    print(j)
+
+# with nogilと組み合わせ
+cdef int k
+with nogil:
+    for k in range(100):
+        # CIL(global interpreter lock)なしで実行 (pythonオブジェクトは使えない)
+
+# if 文
+cdef int x = 10
+
+if x > 5:
+    print("大きい")
+elif x == 5:
+    print("等しい")
+else:
+    print("小さい")
+
+# 構造体
+# 構造体の定義
+cdef struct Point:
+    double x
+    double y
+    int id
+
+# 使用例
+cdef Point p
+p.x = 1.0
+p.y = 2.0
+p.id = 1
+
+# 関数で使用
+cdef double distance(Point p1, Point p2):
+    cdef double dx = p1.x - p2.x
+    cdef double dy = p1.y - p2.y
+    return (dx*dx + dy*dy)**0.5
+
+# クラス
+cdef class MyClass:
+    # 属性の宣言
+    cdef public int x
+    cdef double y # publicなしは外部からアクセス不可
+
+    def __init__(self, int x, double y):
+        self.x = x
+        self.y = y
+    
+    cpdef double compute(self):
+        return self.x * self.y
+    
+    cdef void internal_method(self):
+        # C関数として定義 (Python側から呼べない)
+        self.y += 1.0
+
+# ポインタの使用
+cdef int x = 10
+cdef int* ptr = &x
+cdef int value = ptr[0] # デリファレンス
+
+# 配列のポインタ
+cdef int[5] arr
+cdef int* p = arr
+p[0] = 1
+p[1] = 2
+
+# inline修飾子で関数をインライン化
+cdef inline int fast_add(int a, int b):
+    return a + b
+
+cdef inline double square(double x):
+    return x * x
+
+# C標準ライブラリの使用
+from libc.math cimport sin, cos, sqrt, M_PI
+from libc.stdlib cimport malloc, free, rand
+from libc.string cimport memcpy
+
+cpdef double compute_trig(double angle):
+    return sin(angle) + cos(angle)
+
+cpdef double euclidean_distance(double x1, double y1, double x2, double y2):
+    cdef double dx = x2 - x1
+    cdef double dy = y2 - y1
+    return sqrt(dx*dx + dy*dy)
+
+# 型変換（キャスト）
+cdef int i = 10
+cdef double d = <double>i # Cスタイルのキャスト
+
+# python オブジェクトとの変換
+cdef int x = <int>py_object
+cdef list lst = <list>c_object
+
+# CLIを解放
+cdef void parallel_work() nogil:
+    cdef int i
+    cdef double result = 0.0
+    
+    for i in range(10000000):
+        result += i * 1.5
+
+# with文で一時的に解放
+def mixed_work():
+    cdef int i
+
+    with nogil:
+        # GILなしで実行(高速，並列化可能)
+        for i in range(1000):
+            pass
+    
+    # CIL有で実行(pythonオブジェクトが使える)
+    print("完了")
+
+# geometry.pyx
+cimport cython
+
+@cython.boundcheck(False) # 境界チェックを無効化
+@cython.wraparound(False) # 負のインデックスを無効化
+cpdef double[:] normalize_vector(double[:] vec):
+    cdef int i
+    cdef int n = vec.shape[0]
+    cdef double magnitude = 0.0
+    cdef double[:] result = vec.copy()
+
+    # 大きさを計算
+    for i in range(n):
+        magnitude += vec[i] * vec[i]
+    
+    magnitude = magnitude ** 0.5
+
+    # 正規化
+    if magnitude > 0:
+        for i in range(n):
+            result[i] = vec[i] / magnitude
+    
+    return result
+    
