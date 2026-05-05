@@ -20,3 +20,6 @@ lo, hi = minmax([3, 1, 4])
 
 print(lo)
 print(hi)
+
+print(type(lo))
+print(type(hi))
