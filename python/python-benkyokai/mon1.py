@@ -1,0 +1,5 @@
+xs = [1, 2, 3, 4, 5, 6]
+
+result = [x * 10 for x in xs if x % 2 == 1]
+
+print(result)
