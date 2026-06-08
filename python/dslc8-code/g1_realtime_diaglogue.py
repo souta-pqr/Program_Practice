@@ -321,9 +321,9 @@ class WalkerController:
         with self._lock:
             if not self._planner_mode:
                 self.send_command(start=True, stop=False, planner=True)
-                if self._wait_or_stop(1.0):
+                if self._wait_or_stop(0.5):
                     return
-                self.send_planner(0, [0,0,0], self._fv())
+                self.send_planner(2, [0, 0, 0], self._fv())
                 self._planner_mode = True
                 print("[Walker] planner モード開始")
 
@@ -873,9 +873,7 @@ def main():
 
     player = MotionPlayer(sock)
     walker = WalkerController(sock)
-    # run_deploy.sh 側の WBC が自力で init → 安定済み。
-    # ここで start=True を送ると WBC が再初期化して脚が不安定になるため送らない。
-    # ZMQ 制御は最初の動作/歩行コマンド時に switch_to_streaming / switch_to_planner が担う。
+    walker.start_planner()
     kb = KeyboardController(walker, player)
     kb.start()
     print(f"✅ 起動完了  モード: {'PTT' if args.ptt else 'VAD'}  動作数: {len(motions)}")
