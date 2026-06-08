@@ -416,7 +416,8 @@ class WalkerController:
             self.send_command(start=True, stop=False, planner=True)
             self._planner_mode = True
             self._wait_or_stop(0.5)
-            self.send_planner(0, [0, 0, 0], self._fv())
+            # mode=2 zero-movement: SONIC の能動バランス制御を維持したまま静止
+            self.send_planner(2, [0, 0, 0], self._fv())
 
 
 # ── キーボード手動制御 ────────────────────────────────────────
@@ -808,16 +809,19 @@ class RealtimeDialogue:
                 await self._send({"type": "response.create"})
 
     async def _planner_keepalive(self):
-        """WBC が planner モード中に定期的に mode=0 を送り続け、脚の不安定化を防ぐ。"""
+        """動作終了後の planner モードで SONIC を維持するための定期送信。
+        mode=2 zero-movement: mode=0(IDLE) よりも SONIC の能動バランス制御が継続する。
+        _planner_mode は最初の動作/歩行コマンド後に True になる（起動時は False）。
+        """
         while True:
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.05)
             if self.walker._planner_mode:
                 action_running = (
                     self.walker._action_thread is not None
                     and self.walker._action_thread.is_alive()
                 )
                 if not action_running:
-                    self.walker.send_planner(0, [0, 0, 0], self.walker._fv())
+                    self.walker.send_planner(2, [0, 0, 0], self.walker._fv())
 
     async def run(self):
         await self.connect()
@@ -869,7 +873,9 @@ def main():
 
     player = MotionPlayer(sock)
     walker = WalkerController(sock)
-    walker.start_planner()
+    # run_deploy.sh 側の WBC が自力で init → 安定済み。
+    # ここで start=True を送ると WBC が再初期化して脚が不安定になるため送らない。
+    # ZMQ 制御は最初の動作/歩行コマンド時に switch_to_streaming / switch_to_planner が担う。
     kb = KeyboardController(walker, player)
     kb.start()
     print(f"✅ 起動完了  モード: {'PTT' if args.ptt else 'VAD'}  動作数: {len(motions)}")
