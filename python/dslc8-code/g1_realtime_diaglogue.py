@@ -842,32 +842,15 @@ class RealtimeDialogue:
                 await self._send({"type": "input_audio_buffer.commit"})
                 await self._send({"type": "response.create"})
 
-    async def _planner_keepalive(self):
-        """動作終了後に SONIC を IDLE 姿勢で維持する定期送信。
-        mode=0(IDLE): 足を地面につけた静止立ち。mode=2(WALK)を送り続けると
-        歩行ゲイトが継続して足がバタバタするため IDLE を使う。
-        """
-        while True:
-            await asyncio.sleep(0.1)
-            if self.walker._planner_mode:
-                action_running = (
-                    self.walker._action_thread is not None
-                    and self.walker._action_thread.is_alive()
-                )
-                if not action_running:
-                    self.walker.send_planner(0, [0, 0, 0], self.walker._fv())
-
     async def run(self):
         await self.connect()
         if self.vad:
             await asyncio.gather(
-                self.stream_mic(), self.recv_loop(), self.play_audio(),
-                self._planner_keepalive()
+                self.stream_mic(), self.recv_loop(), self.play_audio()
             )
         else:
             await asyncio.gather(
-                self.ptt_loop(), self.recv_loop(), self.play_audio(),
-                self._planner_keepalive()
+                self.ptt_loop(), self.recv_loop(), self.play_audio()
             )
 
 
