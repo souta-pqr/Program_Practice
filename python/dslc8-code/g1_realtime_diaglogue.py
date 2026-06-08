@@ -22,6 +22,36 @@ from typing import Optional
 import numpy as np
 import zmq
 
+# ALSA/JACK の C レベル stderr エラーメッセージを抑制する
+def _suppress_audio_errors():
+    devnull = os.open(os.devnull, os.O_WRONLY)
+    old_fd = os.dup(2)
+    os.dup2(devnull, 2)
+    try:
+        import pyaudio as _pa; _pa.PyAudio().terminate()
+    except Exception:
+        pass
+    finally:
+        os.dup2(old_fd, 2)
+        os.close(devnull)
+        os.close(old_fd)
+
+_suppress_audio_errors()
+
+def _open_pyaudio():
+    """PyAudio を ALSA/JACK エラーメッセージなしで初期化する"""
+    import pyaudio
+    devnull = os.open(os.devnull, os.O_WRONLY)
+    old_fd = os.dup(2)
+    os.dup2(devnull, 2)
+    try:
+        pa = pyaudio.PyAudio()
+    finally:
+        os.dup2(old_fd, 2)
+        os.close(devnull)
+        os.close(old_fd)
+    return pa
+
 # ── 設定 ──────────────────────────────────────────────────────
 OPENAI_API_KEY        = os.environ.get("OPENAI_API_KEY", "")
 OPENAI_REALTIME_MODEL = os.environ.get("OPENAI_REALTIME_MODEL", "gpt-realtime")
@@ -589,7 +619,7 @@ class RealtimeDialogue:
         loop = asyncio.get_event_loop()
         q: asyncio.Queue = asyncio.Queue()
 
-        pa = pyaudio.PyAudio()
+        pa = _open_pyaudio()
         dev_index = resolve_audio_device(pa, self.mic_device, is_input=True, purpose="マイク")
         if dev_index is None:
             pa.terminate()
@@ -627,7 +657,7 @@ class RealtimeDialogue:
 
     async def play_audio(self):
         import pyaudio
-        pa = pyaudio.PyAudio()
+        pa = _open_pyaudio()
 
         out_index = resolve_audio_device(pa, self.out_device, is_input=False, purpose="スピーカー")
         if out_index is None:
@@ -735,19 +765,19 @@ class RealtimeDialogue:
                 print()
 
             elif t == "input_audio_buffer.speech_started":
-                print("🎤 [話し中...]")
+                print("\n🎤 [話し中...]")
                 self.player.stop()
 
             elif t == "input_audio_buffer.speech_stopped":
-                print("✅ [認識中...]")
+                print("\n✅ [認識中...]")
 
             elif t == "conversation.item.input_audio_transcription.completed":
                 tr = ev.get("transcript", "")
                 if tr:
-                    print(f"👤 ユーザー: {tr}")
+                    print(f"\n👤 ユーザー: {tr}")
 
             elif t == "response.created":
-                print("🤖 G1: ", end="", flush=True)
+                print("\n🤖 G1: ", end="", flush=True)
 
             elif t == "error":
                 print(f"[エラー] {ev.get('error', ev)}")
