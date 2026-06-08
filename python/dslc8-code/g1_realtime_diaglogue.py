@@ -332,7 +332,8 @@ class WalkerController:
     def _ensure_planner(self):
         if not self._planner_mode:
             self.send_command(start=True, stop=False, planner=True)
-            if self._wait_or_stop(0.3):
+            # g1_simple_walk.py 参照: start=True 後は 1.5s 待って WBC 初期化完了を待つ
+            if self._wait_or_stop(1.5):
                 return False
             self._planner_mode = True
         return True
@@ -876,13 +877,8 @@ def main():
 
     player = MotionPlayer(sock)
     walker = WalkerController(sock)
-    # start_planner() は WBC に start=True を送り ZMQ 制御を有効化する。
-    # WBC が planner モードへ切り替わる間（約1秒）姿勢が一時的に乱れるが、
-    # その後 keepalive の mode=2 で安定する。対話は安定後に開始すること。
-    walker.start_planner()
-    print("⏳ WBC 安定化中... しばらくお待ちください")
-    time.sleep(2.0)  # start_planner の1秒 + 余裕
-    print("✅ WBC 安定")
+    # start=True は最初のコマンド受信時に _ensure_planner() が送る（遅延初期化）。
+    # 起動直後は WBC を安全モードのまま維持してバタバタを防ぐ。
     kb = KeyboardController(walker, player)
     kb.start()
     print(f"✅ 起動完了  モード: {'PTT' if args.ptt else 'VAD'}  動作数: {len(motions)}")
