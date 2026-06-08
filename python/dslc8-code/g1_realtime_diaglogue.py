@@ -321,12 +321,11 @@ class WalkerController:
         with self._lock:
             if not self._planner_mode:
                 self.send_command(start=True, stop=False, planner=True)
-                # g1_simple_walk.py と同じ方式:
-                # start=True 後は WBC の「安全モード → SONIC ZMQ モード」切り替えが完了するまで
-                # コマンドを送らず 1.5 秒待つ。この間はバタバタするが WBC 固有の動作で避けられない。
-                if self._wait_or_stop(1.5):
-                    return
-                self.send_planner(2, [0, 0, 0], self._fv())
+                # start=True 直後に即座に mode=2 を連打して不安定期間を最短化する
+                for _ in range(20):  # 1.0s @ 20Hz
+                    if self._wait_or_stop(0.05):
+                        return
+                    self.send_planner(2, [0, 0, 0], self._fv())
                 self._planner_mode = True
                 print("[Walker] planner モード開始")
 
