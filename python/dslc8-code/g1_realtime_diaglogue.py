@@ -416,6 +416,7 @@ class WalkerController:
             self.send_command(start=True, stop=False, planner=True)
             self._planner_mode = True
             self._wait_or_stop(0.5)
+            self.send_planner(0, [0, 0, 0], self._fv())
 
 
 # ── キーボード手動制御 ────────────────────────────────────────
@@ -806,15 +807,29 @@ class RealtimeDialogue:
                 await self._send({"type": "input_audio_buffer.commit"})
                 await self._send({"type": "response.create"})
 
+    async def _planner_keepalive(self):
+        """WBC が planner モード中に定期的に mode=0 を送り続け、脚の不安定化を防ぐ。"""
+        while True:
+            await asyncio.sleep(0.1)
+            if self.walker._planner_mode:
+                action_running = (
+                    self.walker._action_thread is not None
+                    and self.walker._action_thread.is_alive()
+                )
+                if not action_running:
+                    self.walker.send_planner(0, [0, 0, 0], self.walker._fv())
+
     async def run(self):
         await self.connect()
         if self.vad:
             await asyncio.gather(
-                self.stream_mic(), self.recv_loop(), self.play_audio()
+                self.stream_mic(), self.recv_loop(), self.play_audio(),
+                self._planner_keepalive()
             )
         else:
             await asyncio.gather(
-                self.ptt_loop(), self.recv_loop(), self.play_audio()
+                self.ptt_loop(), self.recv_loop(), self.play_audio(),
+                self._planner_keepalive()
             )
 
 
