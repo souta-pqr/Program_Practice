@@ -23,7 +23,7 @@ import numpy as np
 import zmq
 
 # ── 設定 ──────────────────────────────────────────────────────
-OPENAI_API_KEY      = os.environ.get("OPENAI_API_KEY", "")
+OPENAI_API_KEY        = os.environ.get("OPENAI_API_KEY", "")
 OPENAI_REALTIME_MODEL = os.environ.get("OPENAI_REALTIME_MODEL", "gpt-realtime")
 
 ZMQ_PORT    = 5556
@@ -485,14 +485,14 @@ class RealtimeDialogue:
         mic_device=None,
         out_device=None,
     ):
-        self.motions  = motions
-        self.player   = player
-        self.walker   = walker
-        self.vad      = vad
+        self.motions    = motions
+        self.player     = player
+        self.walker     = walker
+        self.vad        = vad
         self.mic_device = _normalize_device_selector(mic_device)
         self.out_device = _normalize_device_selector(out_device)
-        self._ws      = None
-        self._abuf    = bytearray()
+        self._ws        = None
+        self._abuf      = bytearray()
 
     async def connect(self):
         try:
@@ -500,7 +500,7 @@ class RealtimeDialogue:
         except ImportError:
             print("pip install websockets"); sys.exit(1)
 
-        print(f"\n[Realtime] モデル: {OPENAI_REALTIME_MODEL}")
+        print(f"[Realtime] モデル: {OPENAI_REALTIME_MODEL}")
         self._ws = await websockets.connect(
             self.URL,
             additional_headers={
@@ -508,7 +508,7 @@ class RealtimeDialogue:
             },
             max_size=10 * 1024 * 1024,
         )
-        print("\n[Realtime] 接続しました")
+        print("[Realtime] 接続しました")
 
         tool_motion = {
             "type": "function",
@@ -557,6 +557,7 @@ class RealtimeDialogue:
             "audio": {
                 "input": {
                     "format": {"type": "audio/pcm", "rate": 24000},
+                    "transcription": {"model": "gpt-4o-transcribe"},
                 },
                 "output": {
                     "format": {"type": "audio/pcm", "rate": 24000},
@@ -588,7 +589,7 @@ class RealtimeDialogue:
             pa.terminate()
             raise RuntimeError("[マイク] 入力デバイスが見つかりません")
         info = pa.get_device_info_by_index(dev_index)
-        print(f"\n[マイク] {info['name']} device={dev_index}, 48000Hz → 24000Hz")
+        print(f"[マイク] {info['name']} device={dev_index}, 48000Hz → 24000Hz")
 
         def cb(in_data, frame_count, time_info, status):
             pcm = np.frombuffer(in_data, dtype=np.int16)
@@ -627,7 +628,7 @@ class RealtimeDialogue:
             pa.terminate()
             raise RuntimeError("[スピーカー] 出力デバイスが見つかりません")
         info = pa.get_device_info_by_index(out_index)
-        print(f"\n[スピーカー] {info['name']} device={out_index}, 48000Hz")
+        print(f"[スピーカー] {info['name']} device={out_index}, 48000Hz")
 
         stream = pa.open(
             format=pyaudio.paInt16,
@@ -660,15 +661,13 @@ class RealtimeDialogue:
             except Exception:
                 continue
             t = ev.get("type", "")
-            print(f"\n[EVENT] {t}", flush=True)
 
             if t == "session.created":
                 model = ev.get("session", {}).get("model", "unknown")
-                print(f"\n[Realtime] セッション確立  model={model}")
-                print(f"\n[DEBUG] session.created: {json.dumps(ev.get('session', {}), indent=2)}")
+                print(f"[Realtime] セッション確立  model={model}")
 
             elif t == "session.updated":
-                pass
+                print("[Realtime] セッション設定 完了")
 
             elif t == "response.output_audio.delta":
                 b64 = ev.get("delta", "")
@@ -688,7 +687,7 @@ class RealtimeDialogue:
                         name = json.loads(ev.get("arguments", "{}")).get("motion_name", "")
                         if name in self.motions:
                             m = self.motions[name]
-                            print(f"\n[動作] → {name}  ({m['desc']}, {m['dur']:.1f}s)")
+                            print(f"[動作] → {name}  ({m['desc']}, {m['dur']:.1f}s)")
                             def _play(motion=m):
                                 self.walker.switch_to_streaming()
                                 self.player.play_once(motion, force=True)
@@ -696,15 +695,15 @@ class RealtimeDialogue:
                                 self.walker.switch_to_planner()
                             threading.Thread(target=_play, daemon=True).start()
                         else:
-                            print(f"\n[動作] 不明: {name}")
+                            print(f"[動作] 不明: {name}")
                     except Exception as e:
-                        print(f"\n[動作エラー] {e}")
+                        print(f"[動作エラー] {e}")
                 elif fname == "walk_command":
                     try:
                         args = json.loads(ev.get("arguments", "{}"))
                         direction = args.get("direction", "stop")
                         steps = max(1, min(10, int(args.get("steps", 1) or 1)))
-                        print(f"\n[歩行] → {direction} x{steps}")
+                        print(f"[歩行] → {direction} x{steps}")
                         def _walk(d=direction, n=steps):
                             if d == "forward":
                                 self.walker.run_action(lambda: self.walker.walk_forward(n))
@@ -718,7 +717,7 @@ class RealtimeDialogue:
                                 self.walker.stop()
                         _walk()
                     except Exception as e:
-                        print(f"\n[歩行エラー] {e}")
+                        print(f"[歩行エラー] {e}")
 
             elif t == "response.output_item.done":
                 item = ev.get("item", {})
@@ -727,25 +726,25 @@ class RealtimeDialogue:
                         self._submit_function_result(item.get("call_id", "")))
 
             elif t == "response.output_audio.done":
-                print("\n")
+                print()
 
             elif t == "input_audio_buffer.speech_started":
-                print("\n🎤 [話し中...]")
+                print("🎤 [話し中...]")
                 self.player.stop()
 
             elif t == "input_audio_buffer.speech_stopped":
-                print("\n✅ [認識中...]")
+                print("✅ [認識中...]")
 
             elif t == "conversation.item.input_audio_transcription.completed":
                 tr = ev.get("transcript", "")
                 if tr:
-                    print(f"\n👤 ユーザー: {tr}")
+                    print(f"👤 ユーザー: {tr}")
 
             elif t == "response.created":
-                print("\n🤖 G1: ", end="", flush=True)
+                print("🤖 G1: ", end="", flush=True)
 
             elif t == "error":
-                print(f"\n[エラー] {ev.get('error', ev)}")
+                print(f"[エラー] {ev.get('error', ev)}")
 
     async def _submit_function_result(self, call_id: str):
         """Function call の結果を送信して音声レスポンスを要求"""
