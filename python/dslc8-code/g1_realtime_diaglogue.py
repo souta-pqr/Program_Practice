@@ -474,12 +474,20 @@ class KeyboardController:
             self._thread.join(timeout=1.0)
 
     def _loop(self):
-        import sys, tty, termios, select
+        import sys, termios, select
         fd  = sys.stdin.fileno()
         old = termios.tcgetattr(fd)
+        # tty.setraw は OPOST(出力処理)も無効化するため \n が \r\n に変換されず
+        # 全 print が斜めになる。OFLAG(出力フラグ)には触れずに入力のみ raw にする。
+        new = list(old)
+        new[0] &= ~(termios.BRKINT | termios.ICRNL | termios.INPCK | termios.ISTRIP | termios.IXON)
+        # new[1](OFLAG) はそのまま → ONLCR が生きて \n → \r\n 変換が維持される
+        new[3] &= ~(termios.ECHO | termios.ICANON | termios.IEXTEN | termios.ISIG)
+        new[6][termios.VMIN] = 1
+        new[6][termios.VTIME] = 0
+        termios.tcsetattr(fd, termios.TCSADRAIN, new)
         print("[Keyboard] WASD 手動制御有効 (W=前進 S=後退 A=左旋回 D=右旋回 Space=停止)")
         try:
-            tty.setraw(fd)
             while self._running:
                 if not select.select([sys.stdin], [], [], 0.1)[0]:
                     continue
