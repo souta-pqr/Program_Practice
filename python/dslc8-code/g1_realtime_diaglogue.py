@@ -318,17 +318,22 @@ class WalkerController:
         self._action_thread.start()
 
     def start_planner(self):
-        # run_deploy.sh (運営) が start=True で WBC を初期化済み。
-        # ここで再度 start=True を送ると WBC が再初期化されてバタバタするため送らない。
-        # keepalive が mode=2 を送り続けることで SONIC のバランス制御を維持する。
         with self._lock:
             if not self._planner_mode:
+                self.send_command(start=True, stop=False, planner=True)
+                # start=True 直後に即座に mode=2 を連打して不安定期間を最短化する
+                for _ in range(20):  # 1.0s @ 20Hz
+                    if self._wait_or_stop(0.05):
+                        return
+                    self.send_planner(2, [0, 0, 0], self._fv())
                 self._planner_mode = True
-                print("[Walker] planner モード (運営初期化済み)")
+                print("[Walker] planner モード開始")
 
     def _ensure_planner(self):
-        # 運営が planner モードで起動済みなので command は不要。
         if not self._planner_mode:
+            self.send_command(start=True, stop=False, planner=True)
+            if self._wait_or_stop(0.3):
+                return False
             self._planner_mode = True
         return True
 
@@ -871,7 +876,13 @@ def main():
 
     player = MotionPlayer(sock)
     walker = WalkerController(sock)
+    # start_planner() は WBC に start=True を送り ZMQ 制御を有効化する。
+    # WBC が planner モードへ切り替わる間（約1秒）姿勢が一時的に乱れるが、
+    # その後 keepalive の mode=2 で安定する。対話は安定後に開始すること。
     walker.start_planner()
+    print("⏳ WBC 安定化中... しばらくお待ちください")
+    time.sleep(2.0)  # start_planner の1秒 + 余裕
+    print("✅ WBC 安定")
     kb = KeyboardController(walker, player)
     kb.start()
     print(f"✅ 起動完了  モード: {'PTT' if args.ptt else 'VAD'}  動作数: {len(motions)}")
