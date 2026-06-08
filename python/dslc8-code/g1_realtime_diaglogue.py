@@ -22,36 +22,6 @@ from typing import Optional
 import numpy as np
 import zmq
 
-# ALSA/JACK の C レベル stderr エラーメッセージを抑制する
-def _suppress_audio_errors():
-    devnull = os.open(os.devnull, os.O_WRONLY)
-    old_fd = os.dup(2)
-    os.dup2(devnull, 2)
-    try:
-        import pyaudio as _pa; _pa.PyAudio().terminate()
-    except Exception:
-        pass
-    finally:
-        os.dup2(old_fd, 2)
-        os.close(devnull)
-        os.close(old_fd)
-
-_suppress_audio_errors()
-
-def _open_pyaudio():
-    """PyAudio を ALSA/JACK エラーメッセージなしで初期化する"""
-    import pyaudio
-    devnull = os.open(os.devnull, os.O_WRONLY)
-    old_fd = os.dup(2)
-    os.dup2(devnull, 2)
-    try:
-        pa = pyaudio.PyAudio()
-    finally:
-        os.dup2(old_fd, 2)
-        os.close(devnull)
-        os.close(old_fd)
-    return pa
-
 # ── 設定 ──────────────────────────────────────────────────────
 OPENAI_API_KEY        = os.environ.get("OPENAI_API_KEY", "")
 OPENAI_REALTIME_MODEL = os.environ.get("OPENAI_REALTIME_MODEL", "gpt-realtime")
@@ -362,8 +332,7 @@ class WalkerController:
     def _ensure_planner(self):
         if not self._planner_mode:
             self.send_command(start=True, stop=False, planner=True)
-            # g1_simple_walk.py 参照: start=True 後は 1.5s 待って WBC 初期化完了を待つ
-            if self._wait_or_stop(1.5):
+            if self._wait_or_stop(0.3):
                 return False
             self._planner_mode = True
         return True
@@ -474,20 +443,12 @@ class KeyboardController:
             self._thread.join(timeout=1.0)
 
     def _loop(self):
-        import sys, termios, select
+        import sys, tty, termios, select
         fd  = sys.stdin.fileno()
         old = termios.tcgetattr(fd)
-        # tty.setraw は OPOST(出力処理)も無効化するため \n が \r\n に変換されず
-        # 全 print が斜めになる。OFLAG(出力フラグ)には触れずに入力のみ raw にする。
-        new = list(old)
-        new[0] &= ~(termios.BRKINT | termios.ICRNL | termios.INPCK | termios.ISTRIP | termios.IXON)
-        # new[1](OFLAG) はそのまま → ONLCR が生きて \n → \r\n 変換が維持される
-        new[3] &= ~(termios.ECHO | termios.ICANON | termios.IEXTEN | termios.ISIG)
-        new[6][termios.VMIN] = 1
-        new[6][termios.VTIME] = 0
-        termios.tcsetattr(fd, termios.TCSADRAIN, new)
         print("[Keyboard] WASD 手動制御有効 (W=前進 S=後退 A=左旋回 D=右旋回 Space=停止)")
         try:
+            tty.setraw(fd)
             while self._running:
                 if not select.select([sys.stdin], [], [], 0.1)[0]:
                     continue
@@ -627,7 +588,7 @@ class RealtimeDialogue:
         loop = asyncio.get_event_loop()
         q: asyncio.Queue = asyncio.Queue()
 
-        pa = _open_pyaudio()
+        pa = pyaudio.PyAudio()
         dev_index = resolve_audio_device(pa, self.mic_device, is_input=True, purpose="マイク")
         if dev_index is None:
             pa.terminate()
@@ -665,7 +626,7 @@ class RealtimeDialogue:
 
     async def play_audio(self):
         import pyaudio
-        pa = _open_pyaudio()
+        pa = pyaudio.PyAudio()
 
         out_index = resolve_audio_device(pa, self.out_device, is_input=False, purpose="スピーカー")
         if out_index is None:
@@ -773,19 +734,19 @@ class RealtimeDialogue:
                 print()
 
             elif t == "input_audio_buffer.speech_started":
-                print("\n🎤 [話し中...]")
+                print("🎤 [話し中...]")
                 self.player.stop()
 
             elif t == "input_audio_buffer.speech_stopped":
-                print("\n✅ [認識中...]")
+                print("✅ [認識中...]")
 
             elif t == "conversation.item.input_audio_transcription.completed":
                 tr = ev.get("transcript", "")
                 if tr:
-                    print(f"\n👤 ユーザー: {tr}")
+                    print(f"👤 ユーザー: {tr}")
 
             elif t == "response.created":
-                print("\n🤖 G1: ", end="", flush=True)
+                print("🤖 G1: ", end="", flush=True)
 
             elif t == "error":
                 print(f"[エラー] {ev.get('error', ev)}")
@@ -850,15 +811,28 @@ class RealtimeDialogue:
                 await self._send({"type": "input_audio_buffer.commit"})
                 await self._send({"type": "response.create"})
 
+    async def _planner_keepalive(self):
+        while True:
+            await asyncio.sleep(0.05)
+            if self.walker._planner_mode:
+                action_running = (
+                    self.walker._action_thread is not None
+                    and self.walker._action_thread.is_alive()
+                )
+                if not action_running:
+                    self.walker.send_planner(2, [0, 0, 0], self.walker._fv())
+
     async def run(self):
         await self.connect()
         if self.vad:
             await asyncio.gather(
-                self.stream_mic(), self.recv_loop(), self.play_audio()
+                self.stream_mic(), self.recv_loop(), self.play_audio(),
+                self._planner_keepalive()
             )
         else:
             await asyncio.gather(
-                self.ptt_loop(), self.recv_loop(), self.play_audio()
+                self.ptt_loop(), self.recv_loop(), self.play_audio(),
+                self._planner_keepalive()
             )
 
 
@@ -898,8 +872,10 @@ def main():
 
     player = MotionPlayer(sock)
     walker = WalkerController(sock)
-    # start=True は最初のコマンド受信時に _ensure_planner() が送る（遅延初期化）。
-    # 起動直後は WBC を安全モードのまま維持してバタバタを防ぐ。
+    walker.start_planner()
+    print("⏳ WBC 安定化中... しばらくお待ちください")
+    time.sleep(2.0)
+    print("✅ WBC 安定")
     kb = KeyboardController(walker, player)
     kb.start()
     print(f"✅ 起動完了  モード: {'PTT' if args.ptt else 'VAD'}  動作数: {len(motions)}")
