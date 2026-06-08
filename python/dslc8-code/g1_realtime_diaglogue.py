@@ -318,20 +318,17 @@ class WalkerController:
         self._action_thread.start()
 
     def start_planner(self):
+        # run_deploy.sh (運営) が start=True で WBC を初期化済み。
+        # ここで再度 start=True を送ると WBC が再初期化されてバタバタするため送らない。
+        # keepalive が mode=2 を送り続けることで SONIC のバランス制御を維持する。
         with self._lock:
             if not self._planner_mode:
-                self.send_command(start=True, stop=False, planner=True)
-                if self._wait_or_stop(0.5):
-                    return
-                self.send_planner(2, [0, 0, 0], self._fv())
                 self._planner_mode = True
-                print("[Walker] planner モード開始")
+                print("[Walker] planner モード (運営初期化済み)")
 
     def _ensure_planner(self):
+        # 運営が planner モードで起動済みなので command は不要。
         if not self._planner_mode:
-            self.send_command(start=True, stop=False, planner=True)
-            if self._wait_or_stop(0.3):
-                return False
             self._planner_mode = True
         return True
 
@@ -415,9 +412,10 @@ class WalkerController:
         with self._lock:
             self.send_command(start=True, stop=False, planner=True)
             self._planner_mode = True
-            self._wait_or_stop(0.5)
-            # mode=2 zero-movement: SONIC の能動バランス制御を維持したまま静止
-            self.send_planner(2, [0, 0, 0], self._fv())
+            for _ in range(10):  # 0.5s @ 20Hz
+                if self._wait_or_stop(0.05):
+                    return
+                self.send_planner(2, [0, 0, 0], self._fv())
 
 
 # ── キーボード手動制御 ────────────────────────────────────────
