@@ -20,6 +20,7 @@ import time
 from typing import Optional
 
 import numpy as np
+import yaml
 import zmq
 
 # ── 設定 ──────────────────────────────────────────────────────
@@ -39,25 +40,15 @@ MIC_RATE      = 48000
 MIC_DEVICE_ID = None  # pyaudio: None=デフォルト or デバイス番号 or デバイス名で部分一致
 OUT_DEVICE_ID = None  # pyaudio: None=デフォルト or デバイス番号 or デバイス名で部分一致
 
-REPO_ROOT      = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-G1_MOTION_DIR  = os.path.join(REPO_ROOT, "data", "motions")
+REPO_ROOT        = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+G1_MOTION_DIR    = os.path.join(REPO_ROOT, "data", "motions")
+DEFAULT_PROMPT   = os.path.join(REPO_ROOT, "configs", "prompt", "shimizu_tencho.yaml")
 
-SYSTEM_PROMPT = """あなたはG1ロボットのアシスタントです。
-ユーザーの話に自然に反応し、簡潔に日本語で答えてください。
-雑談も質問も歓迎です。フレンドリーに話してください。
-返答は1〜2文程度の短さを心がけてください。
 
-あなたはロボットとして体を持っています。返答の前に必ずselect_motionを呼び出してください。
-利用可能な動作名はそのまま動作の説明になっています（例: wave=手を振る, bow_45=45度お辞儀, shrug=肩をすくめる）。
-会話の雰囲気・感情に最も合う動作を1つ選んでください。
-移動を頼まれていないときはselect_motionのみ呼び出してください。
-
-移動の依頼を受けたら、walk_commandを呼び出してください（select_motionの代わりに）。
-- 「3歩前へ」「2歩下がって」のように回数がある場合は steps にその回数を入れる
-- 回数が明示されていない場合の steps は 1
-- 少しだけ・ちょっと なども steps=1 として扱う
-- 止まって・ストップ は direction=stop を使う
-"""
+def load_system_prompt(path: str) -> str:
+    with open(path, encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+    return data["system_prompt"]
 
 
 
@@ -489,15 +480,17 @@ class RealtimeDialogue:
         vad: bool = True,
         mic_device=None,
         out_device=None,
+        system_prompt: str = "",
     ):
-        self.motions    = motions
-        self.player     = player
-        self.walker     = walker
-        self.vad        = vad
-        self.mic_device = _normalize_device_selector(mic_device)
-        self.out_device = _normalize_device_selector(out_device)
-        self._ws        = None
-        self._abuf      = bytearray()
+        self.motions        = motions
+        self.player         = player
+        self.walker         = walker
+        self.vad            = vad
+        self.mic_device     = _normalize_device_selector(mic_device)
+        self.out_device     = _normalize_device_selector(out_device)
+        self.system_prompt  = system_prompt
+        self._ws            = None
+        self._abuf          = bytearray()
 
     async def connect(self):
         try:
@@ -556,7 +549,7 @@ class RealtimeDialogue:
         cfg = {
             "type": "realtime",
             "output_modalities": ["audio"],
-            "instructions": SYSTEM_PROMPT,
+            "instructions": self.system_prompt,
             "tools": [tool_motion, tool_walk],
             "tool_choice": "auto",
             "audio": {
@@ -853,6 +846,8 @@ def main():
     p.add_argument("--motion-dir", default=G1_MOTION_DIR,
                    help=f"動作ライブラリルート (デフォルト: {G1_MOTION_DIR})")
     p.add_argument("--zmq-port",   type=int,   default=ZMQ_PORT)
+    p.add_argument("--prompt",     default=DEFAULT_PROMPT,
+                   help=f"システムプロンプトYAML (デフォルト: {DEFAULT_PROMPT})")
     args = p.parse_args()
 
     if args.list_audio_devices:
@@ -869,6 +864,8 @@ def main():
     time.sleep(0.5)
 
     motions = load_motions(args.motion_dir)
+    system_prompt = load_system_prompt(args.prompt)
+    print(f"[Prompt] {args.prompt}")
 
     player = MotionPlayer(sock)
     walker = WalkerController(sock)
@@ -890,6 +887,7 @@ def main():
                 vad=not args.ptt,
                 mic_device=MIC_DEVICE_ID,
                 out_device=OUT_DEVICE_ID,
+                system_prompt=system_prompt,
             ).run()
         )
     except KeyboardInterrupt:
